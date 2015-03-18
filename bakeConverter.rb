@@ -1,11 +1,13 @@
-# bake to Converter
+# bake to converter
 # Author: Frauke Blossey
 # Start @ 12.03.2015
 
-# includes
 require 'getoptlong'
   
-# get command line arguments:
+#------------------------------------------------------------------------------------------------------
+# Get command line arguments:
+#------------------------------------------------------------------------------------------------------
+
 #unless ARGV.length == 2
 #  puts 'Usage: ruby bakeToConverter.rb -f bakeToConverter/Converter.config -w C:\_dev\projects'  
 #  exit  
@@ -27,51 +29,50 @@ opts.each do |opt, arg|
   end  
 end 
 
-# read Converter.config file to get all necessary parameters
-#File.open(workingdir+converter_config_file) do |f|
-#  File.readlines(f).each do |line| 
-#  end
-#end
-
 fileName = workingdir + converter_config_file
 
-def wordExistsInFile(fileName, seekingExpression)
-  File.open(fileName) do |f|
-    File.readlines(f).each do |line|
-      line.match(seekingExpression) do
-        ar = line.split(" = ")
-        return false if ar.length != 2
-        return ar
+
+#------------------------------------------------------------------------------------------------------
+# Functions for:
+# - reading necessary data from Converter.config file and store it into a hash
+# - call bake and get the BakeOutput file
+# - reading BakeOutput file and store the necessary data into a hash
+#------------------------------------------------------------------------------------------------------
+
+def getHashFromConfigFile(fileName, searchFor)
+  File.open(fileName) do |l|
+    while(line = l.gets) != nil
+      hash = {}
+      ar = []
+      if line.include?(searchFor)
+        while(line = l.gets) != nil
+          ar = line.split(" = ")
+          hash.store(ar[0].strip,ar[1].strip) if ar.length == 2
+          break if line.include?("}")
+        end
+        return hash
       end
     end
   end
 end
 
-mainProj = wordExistsInFile(fileName, "MainProj")
-buildConfig = wordExistsInFile(fileName, "BuildConfig")
-proj2Convert = wordExistsInFile(fileName, "Proj2Convert")
+#------------------------------------------------------------------------------------------------------
 
-bakeMap = {}
-bakeMap[mainProj[0].strip] = mainProj[1].strip
-bakeMap[buildConfig[0].strip] = buildConfig[1].strip
-bakeMap[proj2Convert[0].strip] = proj2Convert[1].strip
-
-# call bake to get the necessary bakeOutput file
-def bake( bakeMap )
-	cmd = "bake -m " + bakeMap['MainProj'] + " -b " + bakeMap['BuildConfig'] + " -p " + bakeMap['Proj2Convert'] + " --printConverter"
+def callBake(bakeHash)
+	cmd = "bake -m " + bakeHash['MainProj'] + " -b " + bakeHash['BuildConfig'] + " -p " + bakeHash['Proj2Convert'] + " --printConverter"
 #	status = system( cmd )
 #	if status == false
 #		abort 'Error while trying to call bake!'
 #	end
-#   puts cmd
+   puts cmd
     return "Files/\BakeOutput.txt"
 end
 
-bakeFileName = bake(bakeMap)
+#------------------------------------------------------------------------------------------------------
 
-def createBakeHash(fileName)
+def getBakeHash(fileName)
   File.open(fileName) do |l|
-    bakeHash = {}
+    b_hash = {}
     while(line = l.gets) != nil
       arr = []
       if line.include?("BAKE_NAME")
@@ -79,8 +80,8 @@ def createBakeHash(fileName)
           arr << line.strip
           break if line.include?("}")
         end
-        arr[-1] = arr[-1].chomp('}')
-        bakeHash["BAKE_NAME"] = arr
+        arr[-1] = arr[-1].chomp("}")
+        b_hash["BAKE_NAME"] = arr
       end    
     
       if line.include?("BAKE_SRC")
@@ -88,8 +89,8 @@ def createBakeHash(fileName)
           arr << line.strip()
           break if line.include?("}")
         end
-        arr[-1] = arr[-1].chomp('}')
-        bakeHash["BAKE_SRC"] = arr
+        arr[-1] = arr[-1].chomp("}")
+        b_hash["BAKE_SRC"] = arr
       end
       
       if line.include?("BAKE_HEADER")
@@ -97,14 +98,42 @@ def createBakeHash(fileName)
           arr << line.strip
           break if line.include?("}")
         end
-        arr[-1] = arr[-1].chomp('}')
-        bakeHash["BAKE_HEADER"] = arr
+        arr[-1] = arr[-1].chomp("}")
+        b_hash["BAKE_HEADER"] = arr
       end
     end
-    return bakeHash
+    return b_hash
   end
 end
 
-blubb = createBakeHash(workingdir+bakeFileName)
-puts blubb
+
+#------------------------------------------------------------------------------------------------------
+# Read Converter.config file to get all the necessary data:
+#------------------------------------------------------------------------------------------------------
+
+bakeHash = getHashFromConfigFile(fileName, "Bake")
+mapHash = getHashFromConfigFile(fileName, "Mapping")
+puts bakeHash
+puts mapHash
+
+#------------------------------------------------------------------------------------------------------
+# Call bake to get the necessary BakeOutput file and read all the necessary
+# information from this file:
+#------------------------------------------------------------------------------------------------------
+
+bakeFileName = callBake(bakeHash)
+bakeHashFromBake = getBakeHash(workingdir+bakeFileName)
+puts bakeHashFromBake
+
+#------------------------------------------------------------------------------------------------------
+# Start Mapping:
+#------------------------------------------------------------------------------------------------------
+
+
+
+
+
+
+
+
 
