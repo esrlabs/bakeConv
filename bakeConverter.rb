@@ -63,11 +63,48 @@ def bake( bakeMap )
 #	if status == false
 #		abort 'Error while trying to call bake!'
 #	end
-    puts cmd
+#   puts cmd
     return "Files/\BakeOutput.txt"
 end
 
-
 bakeFileName = bake(bakeMap)
 
+def createBakeHash(fileName)
+  File.open(fileName) do |l|
+    bakeHash = {}
+    while(line = l.gets) != nil
+      arr = []
+      if line.include?("BAKE_NAME")
+        while(line = l.gets) != nil
+          arr << line.strip
+          break if line.include?("}")
+        end
+        arr[-1] = arr[-1].chomp('}')
+        bakeHash["BAKE_NAME"] = arr
+      end    
+    
+      if line.include?("BAKE_SRC")
+        while(line = l.gets) != nil
+          arr << line.strip()
+          break if line.include?("}")
+        end
+        arr[-1] = arr[-1].chomp('}')
+        bakeHash["BAKE_SRC"] = arr
+      end
+      
+      if line.include?("BAKE_HEADER")
+        while(line = l.gets) != nil
+          arr << line.strip
+          break if line.include?("}")
+        end
+        arr[-1] = arr[-1].chomp('}')
+        bakeHash["BAKE_HEADER"] = arr
+      end
+    end
+    return bakeHash
+  end
+end
+
+blubb = createBakeHash(workingdir+bakeFileName)
+puts blubb
 
