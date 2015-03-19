@@ -106,28 +106,84 @@ def getBakeHash(fileName)
   end
 end
 
-
 #------------------------------------------------------------------------------------------------------
-# Read Converter.config file to get all the necessary data:
+# Read necessary data from Converter.config for the bake call.
+# Call bake and get BakeOutput file. Read out the BakeOutput file and create a hash with the necessary data.
 #------------------------------------------------------------------------------------------------------
 
 bakeHash = getHashFromConfigFile(fileName, "Bake")
-mapHash = getHashFromConfigFile(fileName, "Mapping")
-puts bakeHash
-puts mapHash
-
-#------------------------------------------------------------------------------------------------------
-# Call bake to get the necessary BakeOutput file and read all the necessary
-# information from this file:
-#------------------------------------------------------------------------------------------------------
 
 bakeFileName = callBake(bakeHash)
 bakeHashFromBake = getBakeHash(workingdir+bakeFileName)
-puts bakeHashFromBake
+
+#puts bakeHash
+#puts bakeHashFromBake
 
 #------------------------------------------------------------------------------------------------------
-# Start Mapping:
+# ToDo:
 #------------------------------------------------------------------------------------------------------
+
+def convertProcess(fileName, workingdir, bakeHashFromBake)
+  File.open(fileName) do |l|
+    while(line = l.gets) != nil
+      hash = {}
+      ar = []
+      if line.include?("Mapping")
+        while(line = l.gets) != nil
+          ar = line.split(" = ")
+          hash.store(ar[0].strip,ar[1].strip) if ar.length == 2
+          break if line.include?("}")
+        end
+        doMapping(hash, workingdir, bakeHashFromBake)
+      end
+    end
+  end
+end
+
+def doMapping(hash, workingdir, bakeHashFromBake)
+  mainTmpFile = workingdir + hash['InputDir'] + "\\"+ hash['TemplateFile']
+  mainTmpFileReplaced = workingdir + hash['InputDir'] + "\\"+ hash['OutputFileName']
+  
+  File.open(mainTmpFileReplaced, 'w') do |fout|  
+    File.open(mainTmpFile) do |f|
+      File.readlines(f).each do |line|
+        line.gsub!(/\$\$\(BAKE_NAME\)/, bakeHashFromBake['BAKE_NAME'][0].to_s)
+
+        sourceResult = line.scan(/(.*)\$\$\(BAKE_SRC\)(.*)/)
+        headerResult = line.scan(/(.*)\$\$\(BAKE_HEADER\)(.*)/)
+        
+        hash.keys.each do |k|
+          if line.match(k)
+            searchFor = "\$\$\("+ k + "\)"
+            line.gsub!(searchFor, hash[k])
+          end 
+        end
+        
+        if sourceResult.length > 0
+          prefix = sourceResult[0][0]
+          postfix = sourceResult[0][1]
+          bakeHashFromBake['BAKE_SRC'].each do |src|
+              fout.write(prefix + " " + src + " " + postfix + "\n") if prefix != ""
+              fout.write(prefix + src + postfix + "\n") if prefix == ""
+          end
+        elsif headerResult.length > 0
+          prefix = headerResult[0][0]
+          postfix = headerResult[0][1]
+          bakeHashFromBake['BAKE_HEADER'].each do |hdr|
+            fout.write(prefix + " " + hdr + " " + postfix + "\n") if prefix != ""
+            fout.write(prefix + hdr + postfix + "\n") if prefix == ""
+          end
+        else
+            fout.write(line)
+        end
+      end
+    end
+  end
+end
+
+convertProcess(fileName, workingdir, bakeHashFromBake)
+
+
 
 
 
