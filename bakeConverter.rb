@@ -13,7 +13,7 @@ require 'getoptlong'
 #  exit  
 #end
   
-converter_config_file = workingdir = ''  
+converterConfigFile = workingdir = ''  
 # specify the options we accept and initialize them  
 opts = GetoptLong.new(  
 [ '--file', '-f', GetoptLong::OPTIONAL_ARGUMENT ],  
@@ -23,20 +23,19 @@ opts = GetoptLong.new(
 opts.each do |opt, arg|  
   case opt  
     when '--file'  
-      converter_config_file = arg  
+      converterConfigFile = arg  
     when '--workingdir'  
       workingdir = arg  
   end  
 end 
 
-fileName = workingdir + converter_config_file
-
+fileName = workingdir + converterConfigFile
 
 #------------------------------------------------------------------------------------------------------
 # Functions for:
-# - reading necessary data from Converter.config file and store it into a hash
-# - call bake and get the BakeOutput file
-# - reading BakeOutput file and store the necessary data into a hash
+# - reading necessary data from Converter.config file and store it into a hash (-> getHashFromConfigFile)
+# - call bake and get the BakeOutput file (-> callBake)
+# - reading BakeOutput file and store the necessary data into a hash (-> getBakeHashFromBakeFile)
 #------------------------------------------------------------------------------------------------------
 
 def getHashFromConfigFile(fileName, searchFor)
@@ -58,8 +57,8 @@ end
 
 #------------------------------------------------------------------------------------------------------
 
-def callBake(bakeHash)
-	cmd = "bake -m " + bakeHash['MainProj'] + " -b " + bakeHash['BuildConfig'] + " -p " + bakeHash['Proj2Convert'] + " --printConverter"
+def callBake(bakeHashForCall)
+	cmd = "bake -m " + bakeHashForCall['MainProj'] + " -b " + bakeHashForCall['BuildConfig'] + " -p " + bakeHashForCall['Proj2Convert'] + " --printConverter"
 #	status = system( cmd )
 #	if status == false
 #		abort 'Error while trying to call bake!'
@@ -70,7 +69,7 @@ end
 
 #------------------------------------------------------------------------------------------------------
 
-def getBakeHash(fileName)
+def getBakeHashFromBakeFile(fileName)
   File.open(fileName) do |l|
     b_hash = {}
     while(line = l.gets) != nil
@@ -111,16 +110,15 @@ end
 # Call bake and get BakeOutput file. Read out the BakeOutput file and create a hash with the necessary data.
 #------------------------------------------------------------------------------------------------------
 
-bakeHash = getHashFromConfigFile(fileName, "Bake")
+bakeHashForCall = getHashFromConfigFile(fileName, "Bake")
 
-bakeFileName = callBake(bakeHash)
-bakeHashFromBake = getBakeHash(workingdir+bakeFileName)
-
-#puts bakeHash
-#puts bakeHashFromBake
+bakeFileName = callBake(bakeHashForCall)
+bakeHashFromBake = getBakeHashFromBakeFile(workingdir+bakeFileName)
 
 #------------------------------------------------------------------------------------------------------
-# ToDo:
+# Functions for:
+# - starting the converting process (convertProcess)
+# - doing the mapping (doMapping)
 #------------------------------------------------------------------------------------------------------
 
 def convertProcess(fileName, workingdir, bakeHashFromBake)
@@ -134,15 +132,18 @@ def convertProcess(fileName, workingdir, bakeHashFromBake)
           hash.store(ar[0].strip,ar[1].strip) if ar.length == 2
           break if line.include?("}")
         end
-        doMapping(hash, workingdir, bakeHashFromBake)
+        idx = 1
+        doMapping(hash, workingdir, bakeHashFromBake, idx, hash['TemplateFile'], hash['OutputFileName'])
       end
     end
   end
 end
 
-def doMapping(hash, workingdir, bakeHashFromBake)
-  mainTmpFile = workingdir + hash['InputDir'] + "\\"+ hash['TemplateFile']
-  mainTmpFileReplaced = workingdir + hash['InputDir'] + "\\"+ hash['OutputFileName']
+#------------------------------------------------------------------------------------------------------
+
+def doMapping(hash, workingdir, bakeHashFromBake, idx, inputFile, outputFile)
+  mainTmpFile = workingdir + hash['InputDir'] + "\\"+ inputFile
+  mainTmpFileReplaced = workingdir + hash['InputDir'] + "\\"+ outputFile
   
   File.open(mainTmpFileReplaced, 'w') do |fout|  
     File.open(mainTmpFile) do |f|
@@ -152,11 +153,15 @@ def doMapping(hash, workingdir, bakeHashFromBake)
         sourceResult = line.scan(/(.*)\$\$\(BAKE_SRC\)(.*)/)
         headerResult = line.scan(/(.*)\$\$\(BAKE_HEADER\)(.*)/)
         
-        hash.keys.each do |k|
-          if line.match(k)
-            searchFor = "\$\$\("+ k + "\)"
+        incldFileFound = false
+        
+        hash.keys.each do |k|  # search and replace other template files
+          if line.match(k) && line.include?("BAKE_INCLD_TEMP_")
+            searchFor = "\$\$\(" + k + ")"
             line.gsub!(searchFor, hash[k])
-          end 
+            incldFileFound = true
+            inputFile = hash[k]
+          end
         end
         
         if sourceResult.length > 0
@@ -173,20 +178,27 @@ def doMapping(hash, workingdir, bakeHashFromBake)
             fout.write(prefix + " " + hdr + " " + postfix + "\n") if prefix != ""
             fout.write(prefix + hdr + postfix + "\n") if prefix == ""
           end
+        elsif incldFileFound
+          fileTmp = outputFile.split(".txt")
+          fileTmp[0].gsub!(/#{idx-1}$/,idx.to_s) if idx > 1
+          outputFile = fileTmp[0] + "_" + idx.to_s + ".txt" if idx == 1
+          outputFile = fileTmp[0] + ".txt" if idx > 1
+          idx += 1
+          fout.write(line)
+          doMapping(hash, workingdir, bakeHashFromBake, idx, inputFile, outputFile)
         else
-            fout.write(line)
+          fout.write(line)
         end
       end
     end
   end
 end
 
+#------------------------------------------------------------------------------------------------------
+# Start the converting process:
+#------------------------------------------------------------------------------------------------------
+
 convertProcess(fileName, workingdir, bakeHashFromBake)
-
-
-
-
-
 
 
 
