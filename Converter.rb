@@ -22,23 +22,31 @@ module BConv
             map.keys.each do |key|               
               
               if line.include?(key.to_s) && map[key].include?(".txt")
+                preAndPostfix = line.scan(/(.*)\$\$\(#{key}\)(.*)/)
+                if preAndPostfix.length == 1
+                  prefix = preAndPostfix[0][0]
+                  postfix = preAndPostfix[0][1]
+                end
+                
                 filename = @workingdir + map['MainProj'] + "\\" + map[key]
                 File.open(filename) do |fr|
                   File.readlines(fr).each do |l|
                     map.keys.each do |k|
-                      wroteLine = findAndReplace(map, k, l, fout)
+                      wroteLine = findAndReplace(map, k, l, fout, prefix, postfix)
                       break if wroteLine == true
                     end
                     if wroteLine == false 
+                      l.strip!
+                      l = prefix + l + postfix + "\n"
                       fout.write(l)
                     end
                   end
                 end
               elsif (map[key][0] == "[") && (map[key][-1] == "]")
                 map.store(key,strToArray(map, key))
-                wroteLine = findAndReplace(map, key, line, fout)
+                wroteLine = findAndReplace(map, key, line, fout, "", "")
               elsif line.include?(key.to_s)
-                wroteLine = findAndReplace(map, key, line, fout)
+                wroteLine = findAndReplace(map, key, line, fout, "", "")
               end
             end
           
@@ -54,22 +62,22 @@ module BConv
       end
     end
   
-    def findAndReplace(map, key, line, fout)
+    def findAndReplace(map, key, line, fout, prefix, postfix)
       wroteLine = false
       found = line.scan(/(.*)\$\$\(#{key}\)(.*)/)
     
       if found.length == 1
-        prefix = found[0][0]
-        postfix = found[0][1]
+        pre = found[0][0]
+        post = found[0][1]
 
         if map[key].length != 0 && map[key].kind_of?(Array) == true
           map[key].each do |val|
-            line = prefix + val.to_s + postfix + "\n"
+            line = prefix + pre + val.to_s + post + postfix + "\n"
             fout.write(line)
             wroteLine = true
           end
         else
-          line = prefix + map[key] + postfix + "\n"
+          line = prefix + pre + map[key] + post + postfix + "\n"
           fout.write(line)
           wroteLine = true
         end
