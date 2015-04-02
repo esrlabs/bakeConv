@@ -34,6 +34,9 @@ module BConv
                     end
                   end
                 end
+              elsif (map[key][0] == "[") && (map[key][-1] == "]")
+                map.store(key,strToArray(map, key))
+                wroteLine = findAndReplace(map, key, line, fout)
               elsif line.include?(key.to_s)
                 wroteLine = findAndReplace(map, key, line, fout)
               end
@@ -54,11 +57,19 @@ module BConv
     def findAndReplace(map, key, line, fout)
       wroteLine = false
       found = line.scan(/(.*)\$\$\(#{key}\)(.*)/)
+    
       if found.length == 1
         prefix = found[0][0]
         postfix = found[0][1]
-        map[key].each do |val|
-          line = prefix + val.to_s + postfix + "\n"
+
+        if map[key].length != 0 && map[key].kind_of?(Array) == true
+          map[key].each do |val|
+            line = prefix + val.to_s + postfix + "\n"
+            fout.write(line)
+            wroteLine = true
+          end
+        else
+          line = prefix + map[key] + postfix + "\n"
           fout.write(line)
           wroteLine = true
         end
@@ -69,7 +80,22 @@ module BConv
       end
       return wroteLine
     end
-  
+    
+    def strToArray(map, key)
+      arrValue = []
+      arr = map[key].split(",")
+     
+      tmp = arr[0].split("[")
+      arr[0] = tmp[1]
+      tmp = arr[-1].split("]")
+      arr[-1] = tmp[0]
+    
+      arr.each do |elm|
+	    elm  = elm.strip
+	    arrValue << elm
+      end
+      return arrValue
+    end
   end
 
 end
