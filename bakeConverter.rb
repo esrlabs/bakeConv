@@ -8,7 +8,6 @@ require 'Bake'
 require 'Converter'
 
 def main
-  
   #-------------------------------------------------------
   # Get command line arguments:
   #-------------------------------------------------------
@@ -54,7 +53,6 @@ def main
   end
   
   puts "Done"
-
 end
 
 main()
