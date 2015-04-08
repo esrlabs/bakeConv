@@ -46,6 +46,9 @@ def main
     bake = BConv::Bake.new
     bakefilename = bake.run(map)
     bhash = bake.getHash(workingdir+bakefilename)
+#    if bhash == nil
+#      abort 'Error\'s occur!'
+#    end
     map.merge!(bhash)
     conv = BConv::Converter.new(workingdir)
     puts "Convert ..."
