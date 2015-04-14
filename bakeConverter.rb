@@ -3,31 +3,36 @@
 # 12.03.2015
 
 require 'getoptlong'
-require 'ConfigParser'
-require 'Bake'
-require 'Converter'
+require './lib/ConfigParser'
+require './lib/Bake'
+require './lib/Converter'
 
 def main
   #-------------------------------------------------------
   # Get command line arguments:
   #-------------------------------------------------------
-  converterConfigFile = workingdir = ''  
+  converterConfigFile = ''
+  setMock = false  
   # specify the options we accept and initialize them  
   opts = GetoptLong.new(  
   [ '--file', '-f', GetoptLong::OPTIONAL_ARGUMENT ],  
-  [ '--workingdir', '-w', GetoptLong::OPTIONAL_ARGUMENT ]
+  [ '--mock', GetoptLong::OPTIONAL_ARGUMENT ]
   )  
    
   opts.each do |opt, arg|  
     case opt  
       when '--file'  
         converterConfigFile = arg  
-      when '--workingdir'  
-        workingdir = arg  
+      when '--mock'  
+        setMock = true  
     end  
   end 
   
-  filename = workingdir + converterConfigFile
+  if converterConfigFile == ""
+    abort 'Error: config file is missing!'
+  end
+  
+  filename = converterConfigFile  
   
   #-------------------------------------------------------
   # Starting converting process:
@@ -45,12 +50,9 @@ def main
     puts "Call Bake ..."
     bake = BConv::Bake.new
     bakefilename = bake.run(map)
-    bhash = bake.getHash(workingdir+bakefilename)
-#    if bhash == nil
-#      abort 'Error\'s occur!'
-#    end
+    bhash = bake.getHash(bakefilename)
     map.merge!(bhash)
-    conv = BConv::Converter.new(workingdir)
+    conv = BConv::Converter.new
     puts "Convert ..."
     conv.convert(map)
   end

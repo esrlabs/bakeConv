@@ -11,8 +11,8 @@ module BConv
     
      def run(map)
       #cmd = "bake -m " + map['MainProj'] + " -b " + map['BuildConfig'] + " -p " + map['Proj2Convert']
-      cmd = "..\\bakeTest\\bakeTester\\bakeTester.rb"
-      status = system("ruby", cmd, "-m", map['MainProj'], "-b", map['BuildConfig'], "-p", map['Proj2Convert'], "--testcase", "t_blanks_end")
+      cmd = "..\\bakeMock\\bakeMock\\bakeMock.rb"
+      status = system("ruby", cmd, "-m", map['MainProj'], "-b", map['BuildConfig'], "-p", map['Proj2Convert'], "--testcase", "t_normal")
       if status == false
         abort 'Error while trying to call bake!'
       end

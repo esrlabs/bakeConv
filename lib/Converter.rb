@@ -6,13 +6,12 @@ module BConv
  
   class Converter
   
-    def initialize(workingdir)
-      @workingdir = workingdir
+    def initialize
     end
     
     def convert(map)
-      templatefilename = @workingdir + map['MainProj'] + "\\" + map['TemplateFile']
-      outputfilename = @workingdir + map['MainProj'] + "\\" + map['OutputFileName']
+      templatefilename = map['MainProj'] + "\\" + map['TemplateFile']
+      outputfilename = map['MainProj'] + "\\" + map['OutputFileName']
 
       begin
       File.open(outputfilename, 'w') do |fout|
@@ -28,7 +27,7 @@ module BConv
                   postfix = preAndPostfix[0][1]
                 end
                 
-                filename = @workingdir + map['MainProj'] + "\\" + map[key]
+                filename = map['MainProj'] + "\\" + map[key]
                 File.open(filename) do |fr|
                   File.readlines(fr).each do |l|
                     map.keys.each do |k|
