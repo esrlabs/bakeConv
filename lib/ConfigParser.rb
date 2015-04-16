@@ -10,7 +10,7 @@ module BConv
       @filename = filename
     end
     
-    def readConfig()
+    def readConfig
       File.open(@filename) do |l|
         mappings = []
         while(line = l.gets) != nil
@@ -18,6 +18,7 @@ module BConv
           ar = []
           if line.include?("Mapping")
             while(line = l.gets) != nil
+              line.gsub!('\\','/')
               ar = line.split(" = ")
               mapping.store(ar[0].strip,ar[1].strip) if ar.length == 2
               if line.include?("}")

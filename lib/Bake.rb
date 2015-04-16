@@ -2,58 +2,72 @@
 # Author: Frauke Blossey
 # 24.03.2015
 
+require '.\lib\Converter'
+
 module BConv
 
   class Bake
   
-    def initialize
+    def initialize(map, setMock)
+      @map = map
+      @setMock = setMock
     end
     
-     def run(map)
-      #cmd = "bake -m " + map['MainProj'] + " -b " + map['BuildConfig'] + " -p " + map['Proj2Convert']
-      cmd = "..\\bakeMock\\bakeMock\\bakeMock.rb"
-      status = system("ruby", cmd, "-m", map['MainProj'], "-b", map['BuildConfig'], "-p", map['Proj2Convert'], "--testcase", "t_normal")
-      if status == false
-        abort 'Error while trying to call bake!'
+     def run
+      #@map['Workspace'].gsub!(/[\[,\]']+/,'')
+      wArr = Util.strToArray('Workspace', @map)
+      workspace = ''
+      for i in (0..wArr.length-1)
+        workspace << (' -w ' + wArr[i])
       end
-      return  map['MainProj'] + "\\" + map['BuildConfig'] + "\\bakeOutput.txt"
+      
+      if @setMock == false
+        bakeLines = `ruby bake.rb -b #{@map['BuildConfig']} -m #{@map['MainProj']} #{workspace} -p #{@map['Proj2Convert']}`
+      else
+        cmd = "../bakeMock/bakeMock/bakeMock.rb"
+        bakeLines = `ruby #{cmd} -b #{@map['BuildConfig']} -m #{@map['MainProj']} #{workspace} -p #{@map['Proj2Convert']}`
+      end
+      abort 'Error while trying to call bake!' unless $?.success?
+      return bakeLines
     end
     
-    def getHash(bakefilename)
+    def getHash(bakeLines)
       startLabel = false
       b_hash = {}
-      File.open(bakefilename) do |l|
-        while(line = l.gets) != nil
-          if line.include?("START_MAPPING") && line[0] != " "
-            startLabel = true
-            while(line = l.gets) != nil
-              if (line[0] == " ") && (line[1] != " ") && (line.include?("BAKE_"))
-                key = ""
-                value = []
-                key = line.strip
-              elsif line[0..1] == "  " && (line[2] != " ") && (line.include?("BAKE_") == false) && (line.include?("END_MAPPING") == false)
-                value << line.strip if value != nil
-                value = line.strip if value == nil
-                b_hash.store(key,value)
-              elsif line[0] != " " && line.include?("BAKE_")
-                abort 'Error: 1 blank is necessary in front of a \'BAKE_\' keyword in the bake output file!'
-              elsif line[0..1] == "  " && line.include?("BAKE_")
-                abort 'Error: Just 1 blank is allowed in front of a \'BAKE_\' keyword in the bake output file!'
-             
-              elsif line[0..1] != "  " && (line.include?("BAKE_") == false) && (line.include?("END_MAPPING") == false)
-                abort 'Error: 2 blanks are necessary in front of a bake keyword value in the bake output file OR there is no END_MAPPING defined!'
-              elsif line[0..2] == "   " && (line.include?("BAKE_") == false) && (line.include?("END_MAPPING") == false)
-                abort 'Error: Just 2 blanks are allowed in front of a bake keyword value in the bake output file!'
-              elsif line.include?("END_MAPPING") && line[0] != " "
-                break
-              elsif line.include?("END_MAPPING") && line[0] == " "
-                abort 'Error: blanks in front of END_MAPPING'
-              end
+      key = ""
+      value = []
+      idx = 0
+      bakeLines.each_line do |l|
+        if l.include?('START_MAPPING') && l[0] != " "
+          startLabel = true
+          bLines = bakeLines.lines.to_a[(idx+1)...-1].join
+          bLines.each_line do |line|
+            if (line[0] == " ") && (line[1] != " ") && (line.include?("BAKE_"))
+              key = ""
+              value = []
+              key = line.strip
+            elsif line[0..1] == "  " && (line[2] != " ") && (line.include?("BAKE_") == false) && (line.include?("END_MAPPING") == false)
+              value << line.strip if value != nil
+              value = line.strip if value == nil
+              b_hash.store(key,value)
+            elsif line[0] != " " && line.include?("BAKE_")
+              abort 'Error: 1 blank is necessary in front of a \'BAKE_\' keyword in the bake output file!'
+            elsif line[0..1] == "  " && line.include?("BAKE_")
+              abort 'Error: Just 1 blank is allowed in front of a \'BAKE_\' keyword in the bake output file!'
+            elsif line[0..1] != "  " && (line.include?("BAKE_") == false) && (line.include?("END_MAPPING") == false)
+              abort 'Error: 2 blanks are necessary in front of a bake keyword value in the bake output file OR there is no END_MAPPING defined!'
+            elsif line[0..2] == "   " && (line.include?("BAKE_") == false) && (line.include?("END_MAPPING") == false)
+              abort 'Error: Just 2 blanks are allowed in front of a bake keyword value in the bake output file!'
+            elsif line.include?("END_MAPPING") && line[0] != " "
+              break
+            elsif line.include?("END_MAPPING") && line[0] == " "
+              abort 'Error: blanks in front of END_MAPPING'
             end
-          elsif line.include?("START_MAPPING") && line[0] == " "
-            abort 'Error: blanks in front of START_MAPPING'
           end
+        elsif l.include?("START_MAPPING") && l[0] == " "
+          abort 'Error: blanks in front of START_MAPPING'
         end
+        idx += 1
       end
       if startLabel == false
         abort 'Error: START_MAPPTING couldn\'t be found in the bake output file!'

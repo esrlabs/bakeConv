@@ -13,7 +13,7 @@ def main
   #-------------------------------------------------------
   converterConfigFile = ''
   setMock = false  
-  # specify the options we accept and initialize them  
+    
   opts = GetoptLong.new(  
   [ '--file', '-f', GetoptLong::OPTIONAL_ARGUMENT ],  
   [ '--mock', GetoptLong::OPTIONAL_ARGUMENT ]
@@ -32,14 +32,14 @@ def main
     abort 'Error: config file is missing!'
   end
   
-  filename = converterConfigFile  
+  configFile = converterConfigFile.gsub('\\','/')      
   
   #-------------------------------------------------------
   # Starting converting process:
   #-------------------------------------------------------
-  cp = BConv::ConfigParser.new(filename)
+  cp = BConv::ConfigParser.new(configFile)
   puts "Reading config ..."
-  mappings = cp.readConfig()
+  mappings = cp.readConfig
   puts "Converting " + mappings.length.to_s + " projects ..."
   
   idxCnt = 0
@@ -48,19 +48,22 @@ def main
     idxCnt += 1
     puts "Convert " + idxCnt.to_s + " from " + mappings.length.to_s + ": " + map['Proj2Convert'] + " (" + map['BuildConfig'] + ")"
     puts "Call Bake ..."
-    bake = BConv::Bake.new
-    bakefilename = bake.run(map)
-    bhash = bake.getHash(bakefilename)
+    bake = BConv::Bake.new(map, setMock)
+    bakeLines = bake.run
+    bhash = bake.getHash(bakeLines)
     map.merge!(bhash)
-    conv = BConv::Converter.new
+    conv = BConv::Converter.new(map, configFile)
     puts "Convert ..."
-    conv.convert(map)
+    conv.convert
   end
   
   puts "Done"
 end
 
-main()
+#-------------------------------------------------------
+# Call the bakeConverter:
+#-------------------------------------------------------
+main
 
 
 

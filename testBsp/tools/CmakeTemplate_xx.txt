@@ -1,0 +1,4 @@
+some CMAKE stuff is written here
+name of the project: $$(BAKE_NAME)
+Here we want source files
+$$(BAKE_SRC)

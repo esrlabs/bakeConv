@@ -2,36 +2,40 @@
 # Author: Frauke Blossey
 # 24.03.2015
 
+require '.\lib\Util'
+
 module BConv
  
   class Converter
   
-    def initialize
+    def initialize(map, configFile)
+      @configFile = configFile
+      @map = map
     end
     
-    def convert(map)
-      templatefilename = map['MainProj'] + "\\" + map['TemplateFile']
-      outputfilename = map['MainProj'] + "\\" + map['OutputFileName']
+    def convert
+      outputfilename = Util.makeAbsolute(@map['OutputFileName'], @configFile)
+      templatefilename = Util.makeAbsolute(@map['TemplateFile'], @configFile)
 
       begin
       File.open(outputfilename, 'w') do |fout|
         File.open(templatefilename) do |fread|
           File.readlines(fread).each do |line|
             wroteLine = false
-            map.keys.each do |key|               
-              
-              if line.include?(key.to_s) && map[key].include?(".txt")
+            @map.keys.each do |key|               
+
+              if line.include?(key.to_s) && @map[key].include?(".txt")
                 preAndPostfix = line.scan(/(.*)\$\$\(#{key}\)(.*)/)
                 if preAndPostfix.length == 1
                   prefix = preAndPostfix[0][0]
                   postfix = preAndPostfix[0][1]
                 end
                 
-                filename = map['MainProj'] + "\\" + map[key]
+                filename = Util.makeAbsolute(@map[key], @configFile)
                 File.open(filename) do |fr|
                   File.readlines(fr).each do |l|
-                    map.keys.each do |k|
-                      wroteLine = findAndReplace(map, k, l, fout, prefix, postfix)
+                    @map.keys.each do |k|
+                      wroteLine = findAndReplace(k, l, fout, prefix, postfix)
                       break if wroteLine == true
                     end
                     if wroteLine == false 
@@ -41,11 +45,11 @@ module BConv
                     end
                   end
                 end
-              elsif (map[key][0] == "[") && (map[key][-1] == "]")
-                map.store(key,strToArray(map, key))
-                wroteLine = findAndReplace(map, key, line, fout, "", "")
+              elsif (@map[key][0] == "[") && (@map[key][-1] == "]")
+                @map.store(key,Util.strToArray(key, @map))
+                wroteLine = findAndReplace(key, line, fout, "", "")
               elsif line.include?(key.to_s)
-                wroteLine = findAndReplace(map, key, line, fout, "", "")
+                wroteLine = findAndReplace(key, line, fout, "", "")
               end
             end
           
@@ -61,7 +65,7 @@ module BConv
       end
     end
   
-    def findAndReplace(map, key, line, fout, prefix, postfix)
+    def findAndReplace(key, line, fout, prefix, postfix)
       wroteLine = false
       found = line.scan(/(.*)\$\$\(#{key}\)(.*)/)
     
@@ -69,40 +73,25 @@ module BConv
         pre = found[0][0]
         post = found[0][1]
 
-        if map[key].length != 0 && map[key].kind_of?(Array) == true
-          map[key].each do |val|
+        if @map[key].length != 0 && @map[key].kind_of?(Array) == true
+          @map[key].each do |val|
             line = prefix + pre + val.to_s + post + postfix + "\n"
             fout.write(line)
             wroteLine = true
           end
         else
-          line = prefix + pre + map[key] + post + postfix + "\n"
+          line = prefix + pre + @map[key] + post + postfix + "\n"
           fout.write(line)
           wroteLine = true
         end
       elsif line.include?("/\$\$\(#{key}\)/") && found.length == 0
-        line.gsub!(/\$\$\(#{key}\)/, map[key].to_s)
+        line.gsub!(/\$\$\(#{key}\)/, @map[key].to_s)
         fout.write(line)
         wroteLine = true
       end
       return wroteLine
     end
-    
-    def strToArray(map, key)
-      arrValue = []
-      arr = map[key].split(",")
-     
-      tmp = arr[0].split("[")
-      arr[0] = tmp[1]
-      tmp = arr[-1].split("]")
-      arr[-1] = tmp[0]
-    
-      arr.each do |elm|
-	    elm  = elm.strip
-	    arrValue << elm
-      end
-      return arrValue
-    end
+
   end
 
 end
