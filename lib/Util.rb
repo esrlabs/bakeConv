@@ -2,7 +2,7 @@
 # Author: Frauke Blossey
 # 15.04.2015
 
-require '.\lib\File_ext'
+require_relative 'File_ext'
 
 class Util
   

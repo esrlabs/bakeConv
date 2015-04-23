@@ -3,9 +3,9 @@
 # 12.03.2015
 
 require 'getoptlong'
-require './lib/ConfigParser'
-require './lib/Bake'
-require './lib/Converter'
+require_relative 'lib/ConfigParser'
+require_relative 'lib/Bake'
+require_relative 'lib/Converter'
 
 def main
   #-------------------------------------------------------
@@ -13,24 +13,33 @@ def main
   #-------------------------------------------------------
   converterConfigFile = ''
   setMock = false  
-    
+ 
   opts = GetoptLong.new(  
-  [ '--file', '-f', GetoptLong::OPTIONAL_ARGUMENT ],  
-  [ '--mock', GetoptLong::OPTIONAL_ARGUMENT ]
-  )  
-   
+    [ '--file', '-f', GetoptLong::REQUIRED_ARGUMENT ],  
+    [ '--mock', GetoptLong::OPTIONAL_ARGUMENT ]
+    ) 
+  
+  abort 'Wrong spelling or command -f / --file is missing!' if ARGV[0] != ('-f' || '--file')
+  abort 'Error: config file is missing!' if ARGV[0] == ('-f' || '--file') && (ARGV[1] == "--mock")
+  
+  if ARGV.length > 3
+    abort 'Too many arguments!'
+  end
+      
+  if (ARGV[2] != '--mock') && (ARGV.length == 3) 
+    abort 'Wrong spelling. It has to be called --mock!'
+  end 
+
   opts.each do |opt, arg|  
     case opt  
-      when '--file'  
+      when '--file'
         converterConfigFile = arg  
       when '--mock'  
-        setMock = true  
-    end  
-  end 
-  
-  if converterConfigFile == ""
-    abort 'Error: config file is missing!'
+        setMock = true
+    end
   end
+
+  abort 'Error: config file is missing!' if converterConfigFile == ''
   
   configFile = converterConfigFile.gsub('\\','/')      
   
@@ -48,7 +57,7 @@ def main
     idxCnt += 1
     puts "Convert " + idxCnt.to_s + " from " + mappings.length.to_s + ": " + map['Proj2Convert'] + " (" + map['BuildConfig'] + ")"
     puts "Call Bake ..."
-    bake = BConv::Bake.new(map, setMock)
+    bake = BConv::Bake.new(map, setMock, configFile)
     bakeLines = bake.run
     bhash = bake.getHash(bakeLines)
     map.merge!(bhash)

@@ -2,7 +2,7 @@
 # Author: Frauke Blossey
 # 24.03.2015
 
-require '.\lib\Util'
+require_relative 'Util'
 
 module BConv
  

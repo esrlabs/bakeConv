@@ -2,31 +2,44 @@
 # Author: Frauke Blossey
 # 24.03.2015
 
-require '.\lib\Converter'
+require_relative 'Converter'
 
 module BConv
 
   class Bake
   
-    def initialize(map, setMock)
+    def initialize(map, setMock, configFile)
       @map = map
       @setMock = setMock
+      @configFile = configFile
     end
     
      def run
+     bakeLines = ''
       #@map['Workspace'].gsub!(/[\[,\]']+/,'')
-      wArr = Util.strToArray('Workspace', @map)
-      workspace = ''
-      for i in (0..wArr.length-1)
-        workspace << (' -w ' + wArr[i])
+#      wArr = Util.strToArray('Workspace', @map)
+##      workspace = ''
+#      for i in (0..wArr.length-1)
+#        workspace << (' -w ' + wArr[i])
+#      end
+      
+#      if @setMock == false
+#        bakeLines = `bake        -b #{@map['BuildConfig']} -m #{@map['MainProj']} #{workspace} -p #{@map['Proj2Convert']}`
+#      else
+#        cmd = "../bakeMock/bakeMock/bakeMock.rb"
+#        bakeLines = `ruby #{cmd} -b #{@map['BuildConfig']} -m #{@map['MainProj']} #{workspace} -p #{@map['Proj2Convert']}`
+#      end
+      
+      cmd = @setMock ? ['ruby','../../../bakeMock/bakeMock/bakeMock.rb'] : ['bake']
+      cmd << '-b' << @map['BuildConfig']
+      cmd << '-m' << @map['MainProj']
+      cmd << '-p' << @map['Proj2Convert']
+      Util.strToArray('Workspace', @map).each { |w| cmd << '-w' << w }
+
+      Dir.chdir(File.dirname(@configFile)) do      
+        bakeLines = `#{cmd.join(' ')}`
       end
       
-      if @setMock == false
-        bakeLines = `ruby bake.rb -b #{@map['BuildConfig']} -m #{@map['MainProj']} #{workspace} -p #{@map['Proj2Convert']}`
-      else
-        cmd = "../bakeMock/bakeMock/bakeMock.rb"
-        bakeLines = `ruby #{cmd} -b #{@map['BuildConfig']} -m #{@map['MainProj']} #{workspace} -p #{@map['Proj2Convert']}`
-      end
       abort 'Error while trying to call bake!' unless $?.success?
       return bakeLines
     end
