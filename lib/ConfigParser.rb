@@ -11,24 +11,30 @@ module BConv
     end
     
     def readConfig
-      File.open(@filename) do |l|
-        mappings = []
-        while(line = l.gets) != nil
-          mapping = {}
-          ar = []
-          if line.include?("Mapping")
-            while(line = l.gets) != nil
-              line.gsub!('\\','/')
-              ar = line.split(" = ")
-              mapping.store(ar[0].strip,ar[1].strip) if ar.length == 2
-              if line.include?("}")
-                mappings << mapping
-                break
+      begin
+        File.open(@filename) do |l|
+          mappings = []
+          while(line = l.gets) != nil
+            mapping = {}
+            ar = []
+            if line.include?("Mapping")
+              while(line = l.gets) != nil
+                line.gsub!('\\','/')
+                ar = line.split(" = ")
+                mapping.store(ar[0].strip,ar[1].strip) if ar.length == 2
+                if line.include?("}")   # hier noch Fehlerabfrage
+                  mappings << mapping
+                  break
+                end
               end
+            #else
+              #raise SyntaxError, 'Did you forget the ''Mapping'' keyword?'
             end
           end
+          return mappings
         end
-        return mappings
+      rescue Exception => e
+        abort e.message
       end
     end
     

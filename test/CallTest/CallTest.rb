@@ -1,11 +1,14 @@
+# CallTest (UnitTest)
+# Author: Frauke Blossey
+# 14.04.2015
+
 require 'minitest/autorun'
 
 class CallTest < MiniTest::Unit::TestCase
 
   def test_call_success
-    status = system("ruby", "bakeConverter.rb", "-f", "./testBsp/tools/Converter.config", "--mock")
-    #status = `ruby bakeConverter.rb -f ./testBsp/tools/Converter.config`
-    assert_equal true, status
+    res = `ruby bakeConverter.rb -f ./testBsp/tools/Converter.config --mock`
+    assert_equal true, $?.success?
   end
   
   def test_call_configFile_missing
@@ -36,5 +39,5 @@ class CallTest < MiniTest::Unit::TestCase
     assert_equal false, $?.success?     
     assert_includes res, 'Too many arguments'
   end
-
+  
 end

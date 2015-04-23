@@ -14,8 +14,12 @@ module BConv
     end
     
     def convert
-      outputfilename = Util.makeAbsolute(@map['OutputFileName'], @configFile)
-      templatefilename = Util.makeAbsolute(@map['TemplateFile'], @configFile)
+      begin
+        outputfilename = Util.makeAbsolute(@map['OutputFileName'], @configFile)
+        templatefilename = Util.makeAbsolute(@map['TemplateFile'], @configFile)
+        rescue Exception => msg
+          abort msg
+      end
 
       begin
       File.open(outputfilename, 'w') do |fout|
@@ -61,7 +65,7 @@ module BConv
         end
       end
       rescue Exception => msg
-        puts msg
+        abort msg
       end
     end
   

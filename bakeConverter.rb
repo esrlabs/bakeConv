@@ -47,8 +47,11 @@ def main
   # Starting converting process:
   #-------------------------------------------------------
   cp = BConv::ConfigParser.new(configFile)
+  
   puts "Reading config ..."
   mappings = cp.readConfig
+  
+  abort 'Error: Config file is empty!' if mappings.length == 0
   puts "Converting " + mappings.length.to_s + " projects ..."
   
   idxCnt = 0
