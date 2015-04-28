@@ -21,9 +21,19 @@ class ConfigFileTest < MiniTest::Unit::TestCase
     assert_includes res, 'empty'
   end
   
-#  def test_ConfigFile_mappingKW_missing
-#    res = `ruby bakeConverter.rb -f ./test/ConfigFileTest/ConverterMappingMissing.config --mock 2>&1`
-#    assert_includes res, 'forget the Mapping keyword'
-#  end
+  def test_ConfigFile_mappingKW_missing
+    res = `ruby bakeConverter.rb -f ./test/ConfigFileTest/ConverterMappingMissing.config --mock 2>&1`
+    assert_includes res, 'Mapping keyword is missing'
+  end
+
+  def test_ConfigFile_endLabel_missing
+    res = `ruby bakeConverter.rb -f ./test/ConfigFileTest/ConverterEndLabelMissing.config --mock 2>&1`
+    assert_includes res, 'end label } is missing'
+  end
+  
+  def test_ConfigFile_paramter_missing
+    res = `ruby bakeConverter.rb -f ./test/ConfigFileTest/ConverterParMissing.config --mock 2>&1`
+    assert_includes res, 'parameter is missing!'
+  end
   
 end
