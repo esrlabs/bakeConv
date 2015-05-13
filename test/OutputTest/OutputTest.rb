@@ -21,9 +21,9 @@ class OutputTest < MiniTest::Unit::TestCase
     assert_includes res, 'No such file or directory'
   end
   
-  def test_OutputTest_compareContent
-    res = `ruby bakeConverter.rb -f ./test/OutputTest/ConverterForWrongContent.config --mock 2>&1`
-    #assert_includes res, 
+  def test_OutputTest_notReplaced
+    res = `ruby bakeConverter.rb -f ./test/OutputTest/ConverterForNotReplacing.config.config --mock 2>&1`
+    assert_includes res, 'wasn\'t replaced!' 
   end
 
 end
