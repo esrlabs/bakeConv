@@ -1,0 +1,20 @@
+some CMAKE stuff is written here
+and here
+
+name of the project: $$(BAKE_NAME) ...
+
+and here some stuff
+
+Here we want source files... 
+$$(BAKE_SRC)
+
+...
+and here  some header files...
+blubb bla blubb $$(BAKE_HEADER)
+
+and maybe we want to include/refer to another template:
+TEST TEST $$(BAKE_INCLD_TEMP_X) TEST1 TEST1
+
+We also have some special to replace: $$(AUTOSAR_SPECIAL) something for AUTOSAR
+
+Here is the element of a bake array: $$(BAKE_ARRAY)

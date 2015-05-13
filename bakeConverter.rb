@@ -19,15 +19,15 @@ def main
     [ '--mock', GetoptLong::OPTIONAL_ARGUMENT ]
     ) 
   
-  abort 'Wrong spelling or command -f / --file is missing!' if ARGV[0] != ('-f' || '--file')
-  abort 'Error: config file is missing!' if ARGV[0] == ('-f' || '--file') && (ARGV[1] == "--mock")
+  abort "Wrong spelling or command -f / --file is missing!" if ARGV[0] != ('-f' || '--file')
+  abort "Error: config file is missing!" if ARGV[0] == ('-f' || '--file') && (ARGV[1] == "--mock")
   
   if ARGV.length > 3
-    abort 'Too many arguments!'
+    abort "Too many arguments!"
   end
       
   if (ARGV[2] != '--mock') && (ARGV.length == 3) 
-    abort 'Wrong spelling. It has to be called --mock!'
+    abort "Wrong spelling. It has to be called --mock!"
   end 
 
   opts.each do |opt, arg|  
@@ -39,7 +39,7 @@ def main
     end
   end
 
-  abort 'Error: config file is missing!' if converterConfigFile == ''
+  abort "Error: config file is missing!" if converterConfigFile == ''
   
   configFile = converterConfigFile.gsub('\\','/')      
   
@@ -48,25 +48,27 @@ def main
   #-------------------------------------------------------
   cp = BConv::ConfigParser.new(configFile)
   
-  puts "Reading config ..."
+  puts "Reading config..."
   mappings = cp.readConfig
   
-  abort 'Error: Config file is empty!' if mappings.length == 0
-  puts "Converting " + mappings.length.to_s + " projects ..."
+  abort "Error: Config file is empty!" if mappings.length == 0
+  puts "Converting #{mappings.length} projects..."
   
   idxCnt = 0
   
   mappings.each do |map|
     idxCnt += 1
-    puts "Convert " + idxCnt.to_s + " from " + mappings.length.to_s + ": " + map['Proj2Convert'] + " (" + map['BuildConfig'] + ")"
-    puts "Call Bake ..."
+    puts "Convert #{idxCnt} from #{mappings.length}: #{map['Proj2Convert']} (#{map['BuildConfig']})"
+    puts "Call Bake..."
     bake = BConv::Bake.new(map, setMock, configFile)
     bakeLines = bake.run
     bhash = bake.getHash(bakeLines)
-    map.merge!(bhash)
-    conv = BConv::Converter.new(map, configFile)
-    puts "Convert ..."
-    conv.convert
+    if bhash != nil
+      map.merge!(bhash)
+      conv = BConv::Converter.new(map, configFile)
+      puts "Convert..."
+      conv.convert
+    end
   end
   
   puts "Done"

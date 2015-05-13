@@ -11,7 +11,7 @@ class Util
       outputfilename = file
     else
       outputfilename = File.dirname(configFile) + "/" + file
-    end
+    end    
   end
   
   def self.strToArray(key, map)

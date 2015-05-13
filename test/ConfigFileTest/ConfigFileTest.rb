@@ -7,12 +7,12 @@ require 'minitest/autorun'
 class ConfigFileTest < MiniTest::Unit::TestCase
   
   def test_ConfigFile_success
-    res = `ruby bakeConverter.rb -f ./testBsp/tools/Converter.config --mock`
+    res = `ruby bakeConverter.rb -f ./test/WorkingFiles/tools/Converter.config --mock`
     assert_equal true, $?.success?
   end
   
   def test_ConfigFile_notExisting
-    res = `ruby bakeConverter.rb -f ./test/ConfigFileTest/Converter.config --mock 2>&1`
+    res = `ruby bakeConverter.rb -f ./test/ConfigFileTest/ConverterTest.config --mock 2>&1`
     assert_includes res, 'No such file or directory'
   end
   
