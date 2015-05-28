@@ -23,6 +23,7 @@ TEST TEST Here we want source files TEST1 TEST1
 TEST TEST x.cpp TEST1 TEST1
 TEST TEST y.cpp TEST1 TEST1
 TEST TEST z.cpp TEST1 TEST1
+TEST TEST some text is here TEST1 TEST1
 
 We also have some special to replace: Autosar_on something for AUTOSAR
 

@@ -25,7 +25,7 @@ module BConv
     
     def run
       bakeLines = ''
-      cmd = @setMock ? ['ruby','../../../../bakeMock/bakeMock/bakeMock.rb'] : ['bake']
+      cmd = @setMock ? ['ruby','C:/_dev/projects/bakeMock/bakeMock/bakeMock.rb'] : ['bake']
       cmd << '-b' << @map['BuildConfig']
       cmd << '-m' << @map['MainProj']
       cmd << '-p' << @map['Proj2Convert']
@@ -59,11 +59,11 @@ module BConv
             value = []
             key = line.strip
             
-            if key != "BAKE_NAME" && key != "BAKE_SRC" && key != "BAKE_HEADER"
-              state = Bake::START_MAPPING           
-            else
+            # if key != "BAKE_NAME" && key != "BAKE_SRC" && key != "BAKE_HEADER"
+              # state = Bake::START_MAPPING           
+            # else
               state = VAR
-            end
+            #end
           end
         #elsif line.start_with?("") && !line.match("START_MAPPING") && !line.match("END_MAPPING")
         #  puts "Error: Nothing else than START_MAPPING and END_MAPPING starting without blanks!"

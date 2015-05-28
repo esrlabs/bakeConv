@@ -61,8 +61,10 @@ module BConv
               elsif (@map[key][0] == "[") && (@map[key][-1] == "]")
                 @map.store(key,Util.strToArray(key, @map))
                 wroteLine = findAndReplace(key, line, fout, "", "")
-              elsif line.include?(key.to_s)
-                wroteLine = findAndReplace(key, line, fout, "", "")  
+                break
+              elsif line.match(/#{key.to_s}/)
+                wroteLine = findAndReplace(key, line, fout, "", "")
+                break
               end
             end
             

@@ -2,35 +2,32 @@ some CMAKE stuff is written here
 and here
 
 name of the project: SwcTestProject ...
-name of the project: BAKE_SRC ...
-name of the project: x.cpp ...
-name of the project: y.cpp ...
-name of the project: z.cpp ...
-
 and here some stuff
 
 Here we want source files... 
-$$(BAKE_SRC)
-
+x.cpp
+y.cpp
+z.cpp
+x.hpp
+y.hpp
+z.hpp
 ...
 and here  some header files...
-blubb bla blubb x.hpp
-blubb bla blubb y.hpp
-blubb bla blubb z.hpp
+blubb bla blubb $$(BAKE_HEADER)
 
 and maybe we want to include/refer to another template:
 TEST TEST some CMAKE stuff is written here TEST1 TEST1
 TEST TEST name of the project: SwcTestProject TEST1 TEST1
-TEST TEST name of the project: BAKE_SRC TEST1 TEST1
-TEST TEST name of the project: x.cpp TEST1 TEST1
-TEST TEST name of the project: y.cpp TEST1 TEST1
-TEST TEST name of the project: z.cpp TEST1 TEST1
 TEST TEST Here we want source files TEST1 TEST1
-TEST TEST $$(BAKE_SRC) TEST1 TEST1
+TEST TEST x.cpp TEST1 TEST1
+TEST TEST y.cpp TEST1 TEST1
+TEST TEST z.cpp TEST1 TEST1
+TEST TEST x.hpp TEST1 TEST1
+TEST TEST y.hpp TEST1 TEST1
+TEST TEST z.hpp TEST1 TEST1
 TEST TEST some text is here TEST1 TEST1
 
 We also have some special to replace: Autosar_on something for AUTOSAR
-
 Here is the element of a bake array: test1
 Here is the element of a bake array: test2
 Here is the element of a bake array: test3

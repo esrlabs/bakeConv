@@ -50,6 +50,7 @@ def main
   
   puts "Reading config..."
   mappings = cp.readConfig
+  #puts mappings
   
   abort "Error: Config file is empty!" if mappings.length == 0
   puts "Converting #{mappings.length} projects..."
@@ -63,8 +64,10 @@ def main
     bake = BConv::Bake.new(map, setMock, configFile)
     bakeLines = bake.run
     bhash = bake.getHash(bakeLines)
+    #puts bhash
     if bhash != nil
       map.merge!(bhash)
+      #puts map
       conv = BConv::Converter.new(map, configFile)
       puts "Convert..."
       conv.convert

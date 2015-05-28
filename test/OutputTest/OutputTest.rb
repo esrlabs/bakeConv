@@ -22,7 +22,7 @@ class OutputTest < MiniTest::Unit::TestCase
   end
   
   def test_OutputTest_notReplaced
-    res = `ruby bakeConverter.rb -f ./test/OutputTest/ConverterForNotReplacing.config.config --mock 2>&1`
+    res = `ruby bakeConverter.rb -f ./test/OutputTest/ConverterForNotReplacing.config --mock 2>&1`
     assert_includes res, 'wasn\'t replaced!' 
   end
 
