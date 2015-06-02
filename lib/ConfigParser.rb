@@ -24,7 +24,7 @@ module BConv
                 line.gsub!('\\','/')
                 ar = line.split(" = ")
                 mapping.store(ar[0].strip,ar[1].strip) if ar.length == 2
-                if line.include?("}")
+                if line.match(/^}$/)
                   raise "Error: Workspace parameter from Mapping in line #{lineNumber} is missing!" if mapping.has_key?('Workspace') == false
                   raise "Error: MainProj parameter from Mapping in line #{lineNumber} is missing!" if mapping.has_key?('MainProj') == false
                   raise "Error: BuildConfig parameter from Mapping in line #{lineNumber} is missing!" if mapping.has_key?('BuildConfig') == false
