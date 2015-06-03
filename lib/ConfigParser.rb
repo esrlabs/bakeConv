@@ -6,14 +6,16 @@ module BConv
 
   class ConfigParser
     
-    def initialize(filename)
+    def initialize(filename, projToConvert)
       @filename = filename
+      @projToConvert = projToConvert
     end
     
     def readConfig
       begin
         File.open(@filename) do |l|
           mappings = []
+          mapForProj = {} 
           while(line = l.gets) != nil
             mapping = {}
             ar = []
@@ -31,7 +33,11 @@ module BConv
                   raise "Error: Proj2Convert parameter from Mapping in line #{lineNumber} is missing!" if mapping.has_key?('Proj2Convert') == false
                   raise "Error: OutputFileName parameter from Mapping in line #{lineNumber} is missing!" if mapping.has_key?('OutputFileName') == false
                   raise "Error: TemplateFile parameter from Mapping in line #{lineNumber} is missing!" if mapping.has_key?('TemplateFile') == false
-                  mappings << mapping
+                  if @projToConvert != "" && @projToConvert != mapping['Proj2Convert']
+                    mapping = {}
+                  else
+                    mappings << mapping
+                  end
                   setEndLabel = true
                   break
                 elsif line.include?("Mapping")

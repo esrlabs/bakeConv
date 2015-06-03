@@ -28,6 +28,12 @@ class CallTest < MiniTest::Unit::TestCase
     assert_includes res, 'has to be called --mock'
   end
   
+  def test_call_proj_misspelled
+    res = `ruby bakeConverter.rb -f ./test/WorkingFiles/tools/Converter.config --pojet eepromManager --mock 2>&1`
+    assert_equal false, $?.success?
+    assert_includes res, 'has to be called --project or -p'
+  end
+  
   def test_call_argument_missing
    res = `ruby bakeConverter.rb ./test/WorkingFiles/tools/Converter.config --mock 2>&1`
    assert_equal false, $?.success?
@@ -35,7 +41,7 @@ class CallTest < MiniTest::Unit::TestCase
   end
   
   def test_call_too_many_args
-    res = `ruby bakeConverter.rb -f ./test/WorkingFiles/tools/Converter.config --mock blubb 2>&1`  
+    res = `ruby bakeConverter.rb -f ./test/WorkingFiles/tools/Converter.config -p eepromManager --mock blubb 2>&1`  
     assert_equal false, $?.success?     
     assert_includes res, 'Too many arguments'
   end

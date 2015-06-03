@@ -11,24 +11,30 @@ def main
   #-------------------------------------------------------
   # Get command line arguments:
   #-------------------------------------------------------
-  converterConfigFile = ''
+  converterConfigFile = ""
+  projToConvert = ""
   setMock = false  
  
   opts = GetoptLong.new(  
     [ '--file', '-f', GetoptLong::REQUIRED_ARGUMENT ],  
-    [ '--mock', GetoptLong::OPTIONAL_ARGUMENT ]
+    [ '--mock', GetoptLong::OPTIONAL_ARGUMENT ],
+    [ '--project', '-p', GetoptLong::OPTIONAL_ARGUMENT]
     ) 
   
   abort "Wrong spelling or command -f / --file is missing!" if ARGV[0] != ('-f' || '--file')
   abort "Error: config file is missing!" if ARGV[0] == ('-f' || '--file') && (ARGV[1] == "--mock")
   
-  if ARGV.length > 3
+  if ARGV.length > 5
     abort "Too many arguments!"
   end
-      
-  if (ARGV[2] != '--mock') && (ARGV.length == 3) 
+  
+  if (ARGV[4] != '--mock') && (ARGV.length == 5) 
     abort "Wrong spelling. It has to be called --mock!"
-  end 
+  elsif (ARGV[2] != '--mock') && (ARGV.length == 3)
+    abort "Wrong spelling. It has to be called --mock!"
+  elsif (ARGV[2] != '-p' || ARGV[2] != '--project') && (ARGV.length >= 4)
+    abort "Wrong spelling. It has to be called --project or -p!"
+  end
 
   opts.each do |opt, arg|  
     case opt  
@@ -36,17 +42,19 @@ def main
         converterConfigFile = arg  
       when '--mock'  
         setMock = true
+      when '--project'
+        projToConvert = arg
     end
   end
 
   abort "Error: config file is missing!" if converterConfigFile == ''
   
   configFile = converterConfigFile.gsub('\\','/')      
-  
+ 
   #-------------------------------------------------------
   # Starting converting process:
   #-------------------------------------------------------
-  cp = BConv::ConfigParser.new(configFile)
+  cp = BConv::ConfigParser.new(configFile, projToConvert)
   
   puts "Reading config..."
   mappings = cp.readConfig
