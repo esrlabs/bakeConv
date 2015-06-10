@@ -1,0 +1,7 @@
+#!/usr/bin/env ruby
+
+# BakeConverter
+# Author: Frauke Blossey
+# 12.03.2015
+
+require_relative '../lib/bakeConverter'

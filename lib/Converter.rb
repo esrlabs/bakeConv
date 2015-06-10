@@ -84,7 +84,9 @@ module BConv
       raise "Error: Output file #{File.basename(outputfilename)} is empty!" if File.zero?(outputfilename)
       raise "Error: Template file #{File.basename(templatefilename)} is empty!" if File.zero?(templatefilename)
       rescue Exception => e
-        abort e.message
+        puts e.message
+        puts e.backtrace
+        abort
       end
     end
   
@@ -96,12 +98,12 @@ module BConv
         pre = found[0][0]
         post = found[0][1]
 
-        if @map[key].length != 0 && @map[key].kind_of?(Array) == true
+        if @map[key].kind_of?(Array)
           @map[key].each do |val|
             line = prefix + pre + val.to_s + post + postfix + "\n"
             fout.write(line)
-            wroteLine = true
           end
+          wroteLine = true
         else
           line = prefix + pre + @map[key] + post + postfix + "\n"
           fout.write(line)

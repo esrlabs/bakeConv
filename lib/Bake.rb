@@ -12,9 +12,9 @@ module BConv
   class Bake
     
     #enums
-    START_MAPPING = 1
-    END_MAPPING = 2
-    BEFORE_MAPPING = 3
+    START_INFO = 1
+    END_INFO = 2
+    BEFORE_INFO = 3
     VAR = 4
   
     def initialize(map, setMock, configFile)
@@ -29,6 +29,7 @@ module BConv
       cmd << '-b' << @map['BuildConfig']
       cmd << '-m' << @map['MainProj']
       cmd << '-p' << @map['Proj2Convert']
+      cmd << '--conversion_info'
       Util.strToArray('Workspace', @map).each { |w| cmd << '-w' << w }
 
       Dir.chdir(File.dirname(@configFile)) do      
@@ -43,7 +44,7 @@ module BConv
       b_hash = {}
       key = ""
       value = []
-      state = Bake::BEFORE_MAPPING
+      state = Bake::BEFORE_INFO
       
       bakeLines.each_line do |line|
         if line.start_with?("  ") && line[2] != " "
@@ -54,35 +55,36 @@ module BConv
              
             end
         elsif line.start_with?(" ") && line[1] != " "
-          if state == Bake::START_MAPPING || state == Bake::VAR
+          if state == Bake::START_INFO || state == Bake::VAR
             key = ""
             value = []
             key = line.strip
+            b_hash.store(key,value)
             
-            # if key != "BAKE_NAME" && key != "BAKE_SRC" && key != "BAKE_HEADER"
-              # state = Bake::START_MAPPING           
+            # if key != "BAKE_INCLUDES" && key != "BAKE_SOURCES" && key != "BAKE_DEFINES"
+              # state = Bake::START_INFO           
             # else
               state = VAR
             #end
           end
-        #elsif line.start_with?("") && !line.match("START_MAPPING") && !line.match("END_MAPPING")
-        #  puts "Error: Nothing else than START_MAPPING and END_MAPPING starting without blanks!"
+        #elsif line.start_with?("") && !line.match("START_INFO") && !line.match("END_INFO")
+        #  puts "Error: Nothing else than START_INFO and END_INFO starting without blanks!"
         else
-          if line.match("START_MAPPING") && line[0] != " "
-            # if state != Bake::BEFORE_MAPPING
+          if line.match("START_INFO") && line[0] != " "
+            # if state != Bake::BEFORE_INFO
               # abort "Error!" 
             # end
-            state = Bake::START_MAPPING
-          elsif line.match("END_MAPPING")
-            state = Bake::END_MAPPING
+            state = Bake::START_INFO
+          elsif line.match("END_INFO")
+            state = Bake::END_INFO
           end
         end
       end
       
-      if state != Bake::END_MAPPING
-        puts "Error: There is a problem with END_MAPPING. No output file could be generated!"
+      if state != Bake::END_INFO
+        puts "Error: There is a problem with END_INFO. No output file could be generated!"
         return nil
-       #raise ParseException.new("END_MAPPING missing") 
+       #raise ParseException.new("END_INFO missing") 
       end
        
      # begin

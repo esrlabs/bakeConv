@@ -3,9 +3,10 @@
 # 12.03.2015
 
 require 'getoptlong'
-require_relative 'lib/ConfigParser'
-require_relative 'lib/Bake'
-require_relative 'lib/Converter'
+require_relative 'ConfigParser'
+require_relative 'Bake'
+require_relative 'Converter'
+require_relative 'Version'
 
 def main
   #-------------------------------------------------------
@@ -18,10 +19,11 @@ def main
   opts = GetoptLong.new(  
     [ '--file', '-f', GetoptLong::REQUIRED_ARGUMENT ],  
     [ '--mock', GetoptLong::OPTIONAL_ARGUMENT ],
-    [ '--project', '-p', GetoptLong::OPTIONAL_ARGUMENT]
+    [ '--project', '-p', GetoptLong::OPTIONAL_ARGUMENT],
+    [ '--version', '-v', GetoptLong::OPTIONAL_ARGUMENT]
     ) 
   
-  abort "Wrong spelling or command -f / --file is missing!" if ARGV[0] != ('-f' || '--file')
+  abort "Wrong spelling or command -f / --file is missing!" if (ARGV[0] != ('-f' || '--file')) && (ARGV[0] != ("--version" || "-v"))
   abort "Error: config file is missing!" if ARGV[0] == ('-f' || '--file') && (ARGV[1] == "--mock")
   
   if ARGV.length > 5
@@ -32,8 +34,8 @@ def main
     abort "Wrong spelling. It has to be called --mock!"
   elsif (ARGV[2] != '--mock') && (ARGV.length == 3)
     abort "Wrong spelling. It has to be called --mock!"
-  elsif (ARGV[2] != '-p' || ARGV[2] != '--project') && (ARGV.length >= 4)
-    abort "Wrong spelling. It has to be called --project or -p!"
+  #elsif (ARGV[2] != '-p' || ARGV[2] != '--project') && (ARGV.length >= 4)
+  #  abort "Wrong spelling. It has to be called --project or -p!"
   end
 
   opts.each do |opt, arg|  
@@ -44,6 +46,9 @@ def main
         setMock = true
       when '--project'
         projToConvert = arg
+      when '--version'
+        puts "bakeConverter #{BConv::Version.number}"
+        exit(0)
     end
   end
 
@@ -74,7 +79,8 @@ def main
     bhash = bake.getHash(bakeLines)
     #puts bhash
     if bhash != nil
-      map.merge!(bhash)
+      bhash.each {|k,v| map[k] = v unless map.has_key?k}
+      #map.merge!(bhash)
       #puts map
       conv = BConv::Converter.new(map, configFile)
       puts "Convert..."

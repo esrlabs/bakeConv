@@ -24,8 +24,15 @@ module BConv
               lineNumber = l.lineno
               while(line = l.gets) != nil
                 line.gsub!('\\','/')
-                ar = line.split(" = ")
-                mapping.store(ar[0].strip,ar[1].strip) if ar.length == 2
+                ar = line.split("=")
+                
+                if (ar.length == 2)
+                  mapping.store(ar[0].strip,ar[1].strip)
+                elsif ar[1] == ""
+                  mapping.store(ar[0].strip,"")
+                end
+                #mapping.store(ar[0].strip,ar[1].strip)
+                
                 if line.match(/^}$/)
                   raise "Error: Workspace parameter from Mapping in line #{lineNumber} is missing!" if mapping.has_key?('Workspace') == false
                   raise "Error: MainProj parameter from Mapping in line #{lineNumber} is missing!" if mapping.has_key?('MainProj') == false
@@ -53,7 +60,9 @@ module BConv
           return mappings
         end
       rescue Exception => e
-        abort e.message
+        puts e.message
+        puts e.back_trace
+        abort
       end
     end
     

@@ -15,20 +15,7 @@ class Util
   end
   
   def self.strToArray(key, map)
-    arrValue = []
-    arr = map[key].split(",")
-     
-    tmp = arr[0].split("[")
-    arr[0] = tmp[1]
-    tmp = arr[-1].split("]")
-    arr[-1] = tmp[0]
-    
-    arr.each do |elm|
-    elm  = elm.strip
-    arrValue << elm
-    end
-     
-    return arrValue
+    map[key][1..-2].split(",").map {|elem| elem.strip}
   end
 
 end
