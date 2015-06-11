@@ -31,7 +31,6 @@ module BConv
                 elsif ar[1] == ""
                   mapping.store(ar[0].strip,"")
                 end
-                #mapping.store(ar[0].strip,ar[1].strip)
                 
                 if line.match(/^}$/)
                   raise "Error: Workspace parameter from Mapping in line #{lineNumber} is missing!" if mapping.has_key?('Workspace') == false
@@ -61,7 +60,7 @@ module BConv
         end
       rescue Exception => e
         puts e.message
-        puts e.back_trace
+        #puts e.back_trace
         abort
       end
     end

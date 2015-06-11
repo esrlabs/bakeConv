@@ -6,23 +6,26 @@ require 'minitest/autorun'
 
 class OutputTest < MiniTest::Unit::TestCase
 
+  @@workingdir =  File.expand_path("../../bin/bakeConv", File.dirname(__FILE__))
+  @@outputTestDir = File.expand_path("../OutputTest", File.dirname(__FILE__))
+
   def setup
-    File.delete("./test/OutputTest/CMakeLists.txt") if File.exist?("./test/OutputTest/CMakeLists.txt")
-    File.delete("./test/OutputTest/CMakeListsUnittest.txt") if File.exist?("./test/OutputTest/CMakeListsUnittest.txt")
+    File.delete("#{@@outputTestDir}/CMakeLists.txt") if File.exist?("#{@@outputTestDir}/CMakeLists.txt")
+    File.delete("#{@@outputTestDir}/CMakeListsUnittest.txt") if File.exist?("#{@@outputTestDir}/CMakeListsUnittest.txt")
   end
     
   def test_OutputTest_fileEmpty
-    res = `ruby bakeConverter.rb -f ./test/OutputTest/ConverterForEmptyTmpl.config --mock 2>&1`
+    res = `ruby #{@@workingdir} -f #{@@outputTestDir}/ConverterForEmptyTmpl.config --mock 2>&1`
     assert_includes res, 'empty'
   end
   
   def test_OutputTest_fileNotExisting
-    res = `ruby bakeConverter.rb -f ./test/OutputTest/ConverterForNotExistTmp.config --mock 2>&1`
+    res = `ruby #{@@workingdir} -f #{@@outputTestDir}/ConverterForNotExistTmp.config --mock 2>&1`
     assert_includes res, 'No such file or directory'
   end
   
   def test_OutputTest_notReplaced
-    res = `ruby bakeConverter.rb -f ./test/OutputTest/ConverterForNotReplacing.config --mock 2>&1`
+    res = `ruby #{@@workingdir} -f #{@@outputTestDir}/ConverterForNotReplacing.config --mock 2>&1`
     assert_includes res, 'wasn\'t replaced!' 
   end
 

@@ -1,13 +1,13 @@
 $:.unshift(File.dirname(__FILE__)+"/")
 
 require "rake"
-require "lib/Version"                                 # !!!!!!!!!!!!
+require "lib/Version"
 
 include FileUtils
 
 #YAML::ENGINE.yamler = 'syck'
 
-PKG_VERSION = BConv::Version.number                   # !!!!!!!!!!!!!!!!!!!!!!!!
+PKG_VERSION = BConv::Version.number
 PKG_FILES = FileList[
   "lib/**/*.rb"#,
  # "Rakefile.rb",
@@ -25,6 +25,7 @@ Gem::Specification.new do |s|
   s.require_path = "lib"
   s.author = "Frauke Blossey"
   s.email = "frauke.blossey@esrlabs.com"
+  s.add_dependency("launchy", "=2.4.3")
   s.rdoc_options = ["-x", "doc"]
   s.executables = ["bakeConv"]
 #  s.licenses    = ['MIT']
