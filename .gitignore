@@ -1,4 +1,4 @@
 .metadata/
 *.gem
 TestOutput*
-CMakesLists.txt
+CMakesLists*
