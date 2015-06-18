@@ -53,6 +53,7 @@ module BConv
                       if m
                         puts "Info: Key $$(#{m[1]}) in #{File.basename(filename)}, line #{tmpLineIdx.to_s} wasn\'t replaced!" if m  
                       end
+                      puts l
                       fout.write(l)
                       set = false
                     end
@@ -73,7 +74,7 @@ module BConv
                 m = line.match(/\$\$\((.*)\)/)
                 if m
                   puts "Info: Key $$(#{m[1]}) in #{File.basename(templatefilename)}, line #{lineIdx.to_s} wasn\'t replaced!"
-                end 
+                end
                 fout.write(line)
               end
               set = true

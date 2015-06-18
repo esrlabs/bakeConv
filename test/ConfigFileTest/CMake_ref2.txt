@@ -1,0 +1,19 @@
+some CMAKE stuff is written here
+and here
+
+name of the project: SwcTestProject ...
+
+and here some stuff
+
+set(sourceFiles
+dir/blubb/test/x.cpp
+dir/blubb/test/y.cpp
+dir/blubb/test/z.cpp
+)
+
+
+
+and here  some header files...
+blubb bla blubb x.hpp
+blubb bla blubb y.hpp
+blubb bla blubb z.hpp

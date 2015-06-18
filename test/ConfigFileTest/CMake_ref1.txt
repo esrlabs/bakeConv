@@ -1,0 +1,16 @@
+some CMAKE stuff is written here
+and here
+
+name of the project: SwcTestProject ...
+
+and here some stuff
+
+set(sourceFiles
+)
+
+test
+
+and here  some header files...
+blubb bla blubb x.hpp
+blubb bla blubb y.hpp
+blubb bla blubb z.hpp

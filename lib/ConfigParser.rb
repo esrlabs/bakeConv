@@ -20,13 +20,15 @@ module BConv
             mapping = {}
             ar = []
             setEndLabel = false
-            if line.include?("Mapping")
+            if line.match(/^Mapping/)
               lineNumber = l.lineno
               while(line = l.gets) != nil
                 line.gsub!('\\','/')
                 ar = line.split("=")
                 
                 if (ar.length == 2)
+                  comPos = ar[1].index("#")
+                  ar[1] = ar[1][0..comPos-1] if comPos != nil
                   mapping.store(ar[0].strip,ar[1].strip)
                 elsif ar[1] == ""
                   mapping.store(ar[0].strip,"")
@@ -39,11 +41,17 @@ module BConv
                   raise "Error: Proj2Convert parameter from Mapping in line #{lineNumber} is missing!" if mapping.has_key?('Proj2Convert') == false
                   raise "Error: OutputFileName parameter from Mapping in line #{lineNumber} is missing!" if mapping.has_key?('OutputFileName') == false
                   raise "Error: TemplateFile parameter from Mapping in line #{lineNumber} is missing!" if mapping.has_key?('TemplateFile') == false
-                  if @projToConvert != "" && @projToConvert != mapping['Proj2Convert']
-                    mapping = {}
+                  
+                  if @projToConvert.length != 0
+                    @projToConvert.each do |val|
+                      if val == mapping['Proj2Convert']
+                        mappings << mapping
+                      end
+                    end
                   else
                     mappings << mapping
                   end
+                  
                   setEndLabel = true
                   break
                 elsif line.include?("Mapping")
@@ -51,7 +59,7 @@ module BConv
                 end
               end
               raise "Error: end label } from Mapping in line #{lineNumber} is missing!" if setEndLabel == false
-            elsif line.include?("Workspace")
+            elsif line.match(/^( *)Workspace/)
               lineNumber = l.lineno
               raise "Error: Mapping keyword in front of line #{lineNumber} is missing?"
             end

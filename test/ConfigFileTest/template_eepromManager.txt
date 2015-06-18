@@ -1,0 +1,15 @@
+some CMAKE stuff is written here
+and here
+
+name of the project: $$(BAKE_NAME) ...
+
+and here some stuff
+
+set(sourceFiles
+dir/blubb/test/$$(BAKE_SOURCES)
+)
+
+$$(TEXT)
+
+and here  some header files...
+blubb bla blubb $$(BAKE_HEADER)

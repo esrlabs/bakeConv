@@ -3,6 +3,7 @@
 # 23.04.2015
 
 require 'minitest/autorun'
+require 'FileUtils'
 
 class ConfigFileTest < MiniTest::Unit::TestCase
   
@@ -39,6 +40,26 @@ class ConfigFileTest < MiniTest::Unit::TestCase
   def test_ConfigFile_paramter_missing
     res = `ruby #{@@workingdir} -f #{@@configFileTestDir}/ConverterParMissing.config --mock 2>&1`
     assert_includes res, 'parameter from Mapping in line'
+  end
+  
+  def test_ConfigFile_noSources
+    res = `ruby #{@@workingdir} -f #{@@configFileTestDir}/ConverterVarIsEmpty.config -p eepromManager_noSources --mock 2>&1`
+    b_equal = FileUtils.compare_file("#{@@configFileTestDir}/CMakeLists.txt","#{@@configFileTestDir}/CMake_ref1.txt")
+    assert_equal true, b_equal
+  end
+  
+  def test_ConfigFile_noSources
+    res = `ruby #{@@workingdir} -f #{@@configFileTestDir}/ConverterVarIsEmpty.config -p eepromManager_emptyVar --mock 2>&1`
+    b_equal = FileUtils.compare_file("#{@@configFileTestDir}/CMakeListsUnittest.txt","#{@@configFileTestDir}/CMake_ref2.txt")
+    assert_equal true, b_equal
+  end
+  
+  def test_ConfigFile_comments
+    res = `ruby #{@@workingdir} -f #{@@configFileTestDir}/ConverterComments.config --mock 2>&1`
+    b_equal = FileUtils.compare_file("#{@@configFileTestDir}/ComTestCMakeLists.txt","#{@@configFileTestDir}/CMakeComTest_ref.txt")
+    assert_equal true, b_equal
+    b_exists = File.exists?("#{@@configFileTestDir}/ComTestCMakeListsUnittest.txt")
+    assert_equal false, b_exists
   end
   
 end
