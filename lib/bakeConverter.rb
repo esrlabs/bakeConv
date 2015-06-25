@@ -69,11 +69,11 @@ def main
       BConv::Help.printHelp
       exit(0)
     when "--show_doc"
-      Launchy.open(File.expand_path("../docu/docu.html", File.dirname(__FILE__)))
+      Launchy.open(File.expand_path("../doc/doc.html", File.dirname(__FILE__)))
       exit(0)
     when "--show_license"
       puts
-      File.open("../license.txt") do |l|
+      File.open(File.expand_path("../license.txt", File.dirname(__FILE__))) do |l|
         while(line = l.gets) != nil
           puts line
         end

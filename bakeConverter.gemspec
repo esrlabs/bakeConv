@@ -13,6 +13,7 @@ PKG_FILES = FileList[
  # "Rakefile.rb",
  # "doc/**/*",
  # "doc/index.html",
+  "doc/doc.html",
   "license.txt"
 ]
 
