@@ -1,4 +1,6 @@
 .metadata/
 *.gem
 TestOutput*
-CMakesLists*
+test/**/CMakesLists*
+test/**/CMakesListsUnittest*
+test/**/ComTestCMakeLists*

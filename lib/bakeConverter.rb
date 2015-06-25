@@ -2,8 +2,6 @@
 # Author: Frauke Blossey
 # 12.03.2015
 
-require 'getoptlong'
-require 'optparse'
 require 'rubygems'
 require 'launchy'
 require_relative 'ConfigParser'
@@ -16,83 +14,83 @@ def main
   #-------------------------------------------------------
   # Get command line arguments:
   #-------------------------------------------------------
-  # options = {:filename => nil}
-#   
-  # option_parser = OptionParser.new do |opts|
-    # opts.banner = "Usage: bakeConv [options]"
-    # opts.on('-f', '--file CONFIGFILE', 'config name for your conversion - required') do |filename|
-      # converterConfigFile.push(filename)
-    # end
-    # opts.on('-h', '--help', 'print this help') do
-      # puts opts
-      # exit
-    # end
-  # end
-  
   converterConfigFile = ""
-  projToConvert = []
+  projToConvert = ""
   setMock = false  
  
   begin
-  opts = GetoptLong.new(  
-    [ '--file', '-f', GetoptLong::REQUIRED_ARGUMENT ],  
-    [ '--mock', GetoptLong::OPTIONAL_ARGUMENT ],
-    [ '--project', '-p', GetoptLong::OPTIONAL_ARGUMENT],
-    [ '--version', '-v', GetoptLong::OPTIONAL_ARGUMENT],
-    ['--help', '-h', GetoptLong::NO_ARGUMENT],
-    ['--show_doc', GetoptLong::NO_ARGUMENT]
-    ) 
+  args = ARGV.select.each_with_index{|str, i| i.even? && str[0] == "-"}
+  opts = ARGV.select.each_with_index{|str, i| i.odd? && str[0] != "-"}
   
-  #numberOfMaxArg = 5
+   #puts Hash[(args.zip opts)]
   
-  if ARGV[0] != ('-f' || '--file') && ARGV[0] != ('--version' || '-v') && ARGV[0] != ('--help' || '-h') && ARGV[0] != '--show_doc'
-    abort "Wrong spelling or command -f / --file is missing!" 
-  end
-  
-  abort "Error: config file is missing!" if ARGV[0] == ('-f' || '--file') && (ARGV[1] == "--mock")
-  
-  # if ARGV.length > numberOfMaxArg
-    # abort "Too many arguments!"
-  # end
-  
-  # if (ARGV[4] != '--mock') && (ARGV.length == numberOfMaxArg) 
-    # abort "Wrong spelling. It has to be called --mock!"
-  # elsif (ARGV[2] != '--mock') && (ARGV.length == 3)
-    # abort "Wrong spelling. It has to be called --mock!"
-  # elsif (ARGV[2] != '-p' && ARGV[2] != '--project') && (ARGV.length >= 4)
-   # abort "Wrong spelling. It has to be called --project or -p!"
-  # end
-
-  opts.each do |opt, arg|  
-    case opt  
-      when '--file'
-        converterConfigFile = arg  
-      when '--mock'  
-        setMock = true
-      when '--project'
-        projToConvert.push(arg)
-      when '--version'
-        puts "bakeConverter #{BConv::Version.number}"
-        exit(0)
-      when '--help'
-        BConv::Help.printHelp
-        exit(0)
-      when '--show_doc'
-        Launchy.open(File.expand_path("../docu/docu.html", File.dirname(__FILE__)))
-        exit(0)
-      else
-        puts "mispelled?"
+  if ARGV[0] != "--help" && ARGV[0] != "-h" && ARGV[0] != "--show_doc" && ARGV[0] != "--version" && ARGV[0] != "-v" && ARGV[0] != "--show_license" && ARGV[0] != "--mock"
+    if (!ARGV.include?("-f") &&  !ARGV.include?("--file")) && ARGV.length != 0
+      puts "Error: \'-f\' is missing! (try --help)"
+      exit(-1)
     end
   end
-  
-  rescue Exception => e
-      puts e.message
-      #puts e.back_trace
-      abort
+
+  if ARGV.length == 1 && ARGV[0] != "--help" && ARGV[0] != "-h" && ARGV[0] != "--show_doc" && ARGV[0] != "--version" && ARGV[0] != "-v" && ARGV[0] != "--show_license" && ARGV[0] != "--mock"
+    puts "Error: Too less arguments! (try --help)"
+    puts "Config file is missing!" if opts[0] == nil
+    exit(-1)
+  elsif ARGV.length == 0 || (ARGV.length == 1 && ARGV[0] == "--mock")
+    puts "Error: Too less arguments! (try --help)"
+    exit(-1)
   end
 
-  abort "Error: config file is missing!" if converterConfigFile == ''
-  
+  Hash[(args.zip opts)].each do |k,v|
+    case k
+    when "-f"
+      converterConfigFile = v
+      abort "Error: Config file is missing!" if converterConfigFile == nil
+    when "--file"
+      converterConfigFile = v
+      abort "Error: Config file is missing!" if converterConfigFile == nil
+    when "-p"
+      projToConvert = v
+      abort "Error: project is missing!" if projToConvert == nil
+    when "--project"
+      projToConvert = v
+      abort "Error: project is missing!" if projToConvert == nil
+    when "--mock"
+      setMock = true
+    when "--version"
+      puts "bakeConverter #{BConv::Version.number}"
+      exit(0)
+    when "-v"
+      puts "bakeConverter #{BConv::Version.number}"
+      exit(0)
+    when "--help"
+      BConv::Help.printHelp
+      exit(0)
+    when "-h"
+      BConv::Help.printHelp
+      exit(0)
+    when "--show_doc"
+      Launchy.open(File.expand_path("../docu/docu.html", File.dirname(__FILE__)))
+      exit(0)
+    when "--show_license"
+      puts
+      File.open("../license.txt") do |l|
+        while(line = l.gets) != nil
+          puts line
+        end
+      end
+      exit(0)
+    else
+      puts "Error: don't know '#{k}'! (try --help)"
+      exit(-1)
+    end
+  end
+   
+  rescue => e
+  puts "Error in arguments!"
+  #puts e.to_s    #for debug mode
+  exit(-1)
+  end
+
   configFile = converterConfigFile.gsub('\\','/')   
  
   #-------------------------------------------------------
@@ -102,7 +100,6 @@ def main
   
   puts "Reading config..."
   mappings = cp.readConfig
-  #puts mappings
   
   abort "Error: Config file is empty OR the requested project(s) is commented out!" if mappings.length == 0
   puts "Converting #{mappings.length} projects..."

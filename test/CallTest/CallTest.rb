@@ -17,7 +17,7 @@ class CallTest < MiniTest::Unit::TestCase
   def test_call_configFile_missing
     res = `ruby #{@@workingdir} -f --mock 2>&1`
     assert_equal false, $?.success?
-    assert_includes res, 'config file is missing'
+    assert_includes res, 'Config file is missing'
   end
   
   def test_call_misspelled
@@ -28,25 +28,30 @@ class CallTest < MiniTest::Unit::TestCase
   def test_call_mock_misspelled
     res = `ruby #{@@workingdir} -f #{@@configFileDir} --moc 2>&1`
     assert_equal false, $?.success?
-    assert_includes res, 'has to be called --mock'
+    assert_includes res, 'Error: don\'t know'
   end
   
   def test_call_proj_misspelled
     res = `ruby #{@@workingdir} -f #{@@configFileDir} --pojet eepromManager --mock 2>&1`
     assert_equal false, $?.success?
-    assert_includes res, 'has to be called --project or -p'
+    assert_includes res, 'Error: don\'t know'
   end
   
   def test_call_argument_missing
    res = `ruby #{@@workingdir} #{@@configFileDir} --mock 2>&1`
    assert_equal false, $?.success?
-   assert_includes res, 'command -f / --file is missing'
+   assert_includes res, 'Error: \'-f\' is missing!'
   end
   
-  def test_call_too_many_args
-    res = `ruby #{@@workingdir} -f #{@@configFileDir} -p eepromManager --mock blubb 2>&1`  
-    assert_equal false, $?.success?     
-    assert_includes res, 'Too many arguments'
+  def test_call_proj_arg_missing
+    res = `ruby #{@@workingdir} -f #{@@configFileDir} -p --mock 2>&1`
+    assert_equal false, $?.success?
+    assert_includes res, 'Error: project is missing!'
+  end
+  
+  def test_call_too_less_args
+    res = `ruby #{@@workingdir} --mock 2>&1`
+    assert_includes res, 'Error: Too less arguments!'
   end
   
 end

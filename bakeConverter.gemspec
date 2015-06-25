@@ -9,11 +9,11 @@ include FileUtils
 
 PKG_VERSION = BConv::Version.number
 PKG_FILES = FileList[
-  "lib/**/*.rb"#,
+  "lib/**/*.rb",
  # "Rakefile.rb",
  # "doc/**/*",
  # "doc/index.html",
- # "license.txt"
+  "license.txt"
 ]
 
 Gem::Specification.new do |s|
