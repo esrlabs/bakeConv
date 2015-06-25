@@ -28,6 +28,6 @@ Gem::Specification.new do |s|
   s.add_dependency("launchy", "=2.4.3")
   s.rdoc_options = ["-x", "doc"]
   s.executables = ["bakeConv"]
-#  s.licenses    = ['MIT']
+  s.licenses    = ['MIT']
   s.required_ruby_version = '>= 1.9'
 end
