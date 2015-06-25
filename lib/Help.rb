@@ -12,7 +12,8 @@ module BConv
       puts "[-p, --project] <projName>         Project to convert (default are all projects mentioned in the config file).\n\n"
       puts "-v, --version                      Print version."
       puts "-h, --help                         Print this help."
-      puts "--showdoc                          Open documentation."
+      puts "--show_doc                         Open documentation."
+      puts "--show_license                     Print the license." 
       
     end
     
