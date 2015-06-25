@@ -20,7 +20,7 @@ Gem::Specification.new do |s|
   s.name = "bakeConv"
   s.version = PKG_VERSION
   s.summary = "tbd"
-  s.description = "tbd"
+  s.description = "bake converter is used to convert from bake to some other file, e.g. CMake file, which depends on your template file."
   s.files = PKG_FILES.to_a
   s.require_path = "lib"
   s.author = "Frauke Blossey"
