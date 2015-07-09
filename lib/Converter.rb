@@ -53,7 +53,6 @@ module BConv
                       if m
                         puts "Info: Key $$(#{m[1]}) in #{File.basename(filename)}, line #{tmpLineIdx.to_s} wasn\'t replaced!" if m  
                       end
-                      puts l
                       fout.write(l)
                       set = false
                     end

@@ -25,6 +25,7 @@ module BConv
     
     def run
       bakeLines = ''
+      begin
       cmd = @setMock ? ['ruby','C:/_dev/projects/bakeMock/bakeMock/bakeMock.rb'] : ['bake']
       cmd << '-b' << @map['BuildConfig']
       cmd << '-m' << @map['MainProj']
@@ -35,6 +36,12 @@ module BConv
       Dir.chdir(File.dirname(@configFile)) do      
         bakeLines = `#{cmd.join(' ')}`
       end
+      
+      rescue Exception => e
+        puts e.message
+        puts e.back_trace    #for debug mode
+        abort
+      end  
       
       abort "Error while trying to call bake!" unless $?.success?
       return bakeLines
