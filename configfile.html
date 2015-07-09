@@ -2,9 +2,81 @@
 <html>
 <head>
 <title>Documentation of the bake converter</title>
+<style type="text/css">
+#rundrum {
+  border-width:1px;
+  border-style:dashed;
+  border-color:blue;
+  padding:0.2cm;
+  text-align:justify; }
+</style>
 </head>
 
 <body>
 <h1>The configuration file Converter.config</h1>
+<ul>
+<li>bakeConv needs a config file, which define a couple of mappings to convert</li>
+<li>for every project you want to convert, you need a "Mapping" scope</li>
+<li>each "Mapping" contains a number of required and optional variables</li>
+</ul>
+<h2>Example</h2>
 
+<table border="1">
+  <tr>
+    <th bgcolor="#CCCCCC">Converter.config</th>
+  </tr>
+  <tr>
+    <td><pre><code>Mapping {
+ 	Workspace = [../../..]
+	MainProj = ../bswMain
+	BuildConfig = main
+	Proj2Convert = lifecycle
+	OutputFileName = ../../../lifecycle/CMakeLists.txt
+	TemplateFile = ../templates/template_libraryWithUnitTest.txt 
+ }
+ </code></pre></td>
+  </tr>
+</table>
+
+<p>The first four variables <b>Workspace (-w in bake), MainProj (-m in bake), BuildConfig (-b in bake), Proj2Convert (-p in bake)</b> are required by bake and have
+to be defined. Usage like in bake (see <a href="https://esrlabs.com/gems/doc/bake-toolkit">bake documentation</a>).</p>
+<p><b>OutputFileName and TemplateFile</b> are also required variables. With</p>
+<pre id="rundrum"><code>OutputFileName = ../../../lifecycle/CMakeLists.txt
+TemplateFile = ../templates/template_libraryWithUnitTest.txt</code></pre>
+bakeConv will be informed where the converted output should be stored and which template file should be used.
+<p><b>Attention: </b>All the paths are relative to the Converter.config file path! You can also use absolute paths.</p>
+<h2>Self defined variables</h2>
+<ul>
+	<li>bake will provide <b>BAKE_SOURCES, BAKE_HEADERS, BAKE_INCLUDES, BAKE_DEFINES and BAKE_DEPENDENCIES</b></li>
+	<li>all other variables have to be defined by the user in the config file</li>
+</ul>
+
+<h3>Examples</h3>
+<table border="1">
+  <tr>
+    <th bgcolor="#CCCCCC">Self defined variables</th>
+  </tr>
+  <tr>
+    <td><pre><code>SpecialDependency = logger
+GMOCK_TEMPLATE = ../templates/template_gMock.txt
+BAKE_SOURCES = []
+TEXT =	
+ </code></pre></td>
+  </tr>
+</table>
+
+<p>Several lines from another template can be insert in the template file by: </p>
+<pre id="rundrum"><code>GMOCK_TEMPLATE = ../templates/template_gMock.txt</code></pre>
+
+<p>If one project doesn't have any source files, then an empty array</p>
+<pre id="rundrum"><code>BAKE_SOURCES = []</code></pre>
+<p>should be defined. Otherwise this variable will appear in the output file.</p>
+<p>In general, with</p>
+<pre id="rundrum"><code>TEXT =</code></pre>
+$$(TEXT) will be replaced by a space.
+
+<p><b>Attention: </b>The self defined variables in the config file should be of course the same as in the template file!</p>
+
+<p><b>Notice: </b>With # you have the possibility to comment out a line in the config file.</p>
+ 
 </body>
