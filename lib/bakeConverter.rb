@@ -9,6 +9,8 @@ require_relative 'Bake'
 require_relative 'Converter'
 require_relative 'Version'
 require_relative 'Help'
+require_relative 'PathAdapt'
+require_relative 'Filter'
 
 def main
   #-------------------------------------------------------
@@ -115,8 +117,16 @@ def main
     #puts bakeLines
     bhash = bake.getHash(bakeLines)
     if bhash != nil
-      bhash.each {|k,v| map[k] = v unless map.has_key?k}
-      #map.merge!(bhash)
+      map.each do |k,v|
+        if (k == "GMOCK_FILTER" && v == "true") || k == "DEPENDENCIES_FILTER" 
+          bhash = BConv::Filter.hashFilter(k, v, bhash)
+        end
+      end
+    end
+    bhash_adapted = BConv::PathAdapt.adapt_path(map['OutputFileName'], bhash)
+    
+    if bhash_adapted != nil
+      bhash_adapted.each {|k,v| map[k] = v unless (map.has_key?k && k!="DEPENDENCIES_FILTER")}
       conv = BConv::Converter.new(map, configFile)
       puts "Convert..."
       conv.convert

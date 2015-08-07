@@ -26,8 +26,8 @@ module BConv
           File.readlines(fread).each do |line|
             lineIdx += 1
             wroteLine = false
-            @map.keys.each do |key|               
-
+            @map.keys.each do |key|
+                           
               if line.include?(key.to_s) && @map[key].include?(".txt")
                 preAndPostfix = line.scan(/(.*)\$\$\(#{key}\)(.*)/)
                 if preAndPostfix.length == 1
@@ -62,7 +62,7 @@ module BConv
                 @map.store(key,Util.strToArray(key, @map))
                 wroteLine = findAndReplace(key, line, fout, "", "")
                 break
-              elsif line.match(/#{key.to_s}/)
+              elsif line.match(/\$\$\(#{key}\)/)
                 wroteLine = findAndReplace(key, line, fout, "", "")
                 break
               end

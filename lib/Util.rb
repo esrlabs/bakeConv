@@ -17,5 +17,19 @@ class Util
   def self.strToArray(key, map)
     map[key][1..-2].split(",").map {|elem| elem.strip}
   end
+  
+  def self.truncateStr(refStr, toTruncStr)
+    posOfSlash = refStr.index("/")
+    while posOfSlash != nil && toTruncStr[0..1] != ".."
+      if refStr[0..posOfSlash] == toTruncStr[0..posOfSlash]
+        toTruncStr = toTruncStr[posOfSlash+1..-1]
+        refStr = refStr[posOfSlash+1..-1]
+      else
+        break
+      end
+      posOfSlash = refStr.index("/")
+    end
+    return toTruncStr
+  end
 
 end
