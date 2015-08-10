@@ -44,10 +44,11 @@ to be defined. Usage like in bake (see <a href="https://esrlabs.com/gems/doc/bak
 <pre id="rundrum"><code>OutputFileName = ../../../lifecycle/CMakeLists.txt
 TemplateFile = ../templates/template_libraryWithUnitTest.txt</code></pre>
 bakeConv will be informed where the converted output should be stored and which template file should be used.
-<p><b>Attention: </b>All the paths are relative to the Converter.config file path! You can also use absolute paths.</p>
+<p><b>Attention: </b>All the paths are <b><font color="red">relative to the Converter.config</font></b> file path! You can also use absolute paths.</p>
 <h2>Self defined variables</h2>
 <ul>
-	<li>bake will provide <b>BAKE_SOURCES, BAKE_HEADERS, BAKE_INCLUDES, BAKE_DEFINES and BAKE_DEPENDENCIES</b></li>
+	<li>bake will provide <b>BAKE_SOURCES, BAKE_HEADERS, BAKE_INCLUDES, BAKE_DEFINES, BAKE_DEPENDENCIES and BAKE_DEPENDENCIES_FILTERED</b></li>
+	<li>BAKE_DEPENDENCIES and BAKE_DEPENDENCIES_FILTERED are summarized in one variable &#x2192; DEPENDENCIES_FILTER (will be needed for UnitTest CMakeLists &#x2192; <a href="notesUnitTestCMakeLists.html">Notes for UnitTest CMakeLists</a>)</li>
 	<li>all other variables have to be defined by the user in the config file</li>
 </ul>
 
@@ -65,12 +66,12 @@ TEXT =
   </tr>
 </table>
 
-<p>Several lines from another template can be insert in the template file by: </p>
+<p>Several lines from another template can be insert in the main template file by: </p>
 <pre id="rundrum"><code>GMOCK_TEMPLATE = ../templates/template_gMock.txt</code></pre>
 
 <p>If one project doesn't have any source files, then an empty array</p>
 <pre id="rundrum"><code>BAKE_SOURCES = []</code></pre>
-<p>should be defined. Otherwise this variable will appear in the output file.</p>
+<p>should be defined. Otherwise $$(BAKE_SOURCES) will appear in the output file.</p>
 <p>In general, with</p>
 <pre id="rundrum"><code>TEXT =</code></pre>
 $$(TEXT) will be replaced by a space.
