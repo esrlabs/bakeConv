@@ -3,8 +3,109 @@
 <head>
 <title>Documentation of the bake converter</title>
 </head>
-
+<style type="text/css">
+#rundrum {
+  border-width:1px;
+  border-style:dashed;
+  border-color:blue;
+  padding:0.2cm;
+  text-align:justify; }
+</style>
+</head>
 <body>
 <h1>The template file</h1>
+bakeConv converts from bake to e.g. CMakeLists files, with the help of a config file and the template file. The template file contains unchanging parts and parts which have to be replaced. With these two files the output file can be generated.
+
+<p>bake provides e.g.</p>
+<ul>
+<li><b>BAKE_SOURCES</b> - provides all source files	
+<li><b>BAKE_HEADERS</b> - provides all header files	
+<li><b>BAKE_INCLUDES</b> - provides all includes	
+</ul>
+
+To get to know all information, which bake provides, use
+<pre id="rundrum"><code>bake -p projectName --conversion_info</code></pre>
+
+<p>All variables (also self defined) have to have the following appearance in the template file</p>
+<pre id="rundrum"><code>$$(...)   e.g. $$(BAKE_SOURCES)</code></pre>
+
+<h3>Examples:</h3>
+<table border="1">
+  <tr>
+    <th bgcolor="#CCCCCC">template_libraryWithUnitTest.txt</th>
+  </tr>
+  <tr>
+    <td><pre><code> setSubdomain(all)
+
+ get_filename_component(folderName ${CMAKE_CURRENT_SOURCE_DIR} NAME)
+ set(targetName ${ZSG_CURRENT_DOMAIN}_${ZSG_CURRENT_SUB_DOMAIN}_${folderName})
+
+ include_directories(
+        <b>$$(BAKE_INCLUDES)</b>
+ )
+
+ set (sourceFiles
+	${CMAKE_CURRENT_SOURCE_DIR}/<b>$$(BAKE_SOURCES)</b>
+ )
+
+ if(ZSG_BUILD_SCOPE STREQUAL "Application")
+    
+    add_zsg_library(${targetName} STATIC ${sourceFiles})
+    
+ elseif(ZSG_BUILD_SCOPE STREQUAL "UnitTest" AND NOT "${CMAKE_CXX_COMPILER_ID}" STREQUAL "MSVC")
+
+	add_subdirectory(test)
+
+ endif()
+ </code></pre></td>
+  </tr>
+</table>
+<p></p>
+<table border="1">
+  <tr>
+    <th bgcolor="#CCCCCC">template_UnitTest.txt</th>
+  </tr>
+  <tr>
+    <td><pre><code> add_definitions( -DUNIT_TEST )
+    
+ include_directories(
+    <b>$$(BAKE_INCLUDES)</b>
+ )
+	
+ set (sourceFilesUnitTest
+    <b>$$(BAKE_SOURCES)</b>
+ )
+	
+ add_test_executable(gtest_${targetName}        
+    ${sourceFilesUnitTest}
+ )
+    
+ add_test_library(gtest_${targetName}_sut STATIC ${sourceFiles})
+
+ set (testFrameworkTarget "")
+    
+ <b>$$(GMOCK_TEMPLATE)</b>    
+    
+ target_link_libraries(gtest_${targetName}
+    gtest_${targetName}_sut
+    gtest_esr_all_<b>$$(DEPENDENCIES_FILTER)</b>_sut
+    ${testFrameworkTarget}
+ )
+ </code></pre></td>
+  </tr>
+</table>
+<p></p>
+<table border="1">
+  <tr>
+    <th bgcolor="#CCCCCC">template_GMock.txt (will be inserted in template_UnitTest.txt and replace $$(GMOCK_TEMPLATE))</th>
+  </tr>
+  <tr>
+    <td><pre><code> includeTestFrameworkDirectories(GMock)
+ getTestFrameworkLibTarget("GMock" testFrameworkTarget)
+ </code></pre></td>
+  </tr>
+</table>
+
+<p><b>Note:</b> All templates which should be used have to be defined in your config file.</p>
 
 </body>

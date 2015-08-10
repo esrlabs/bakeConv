@@ -36,7 +36,7 @@ If a separate CMakeLists.txt for UnitTest should be generate, some points have t
     
     target_link_libraries(gtest_${targetName}
     gtest_${targetName}_sut
-    gtest_esr_all_$$(DEPENDENCIES_FILTER)_sut
+    gtest_esr_all_<b>$$(DEPENDENCIES_FILTER)</b>_sut
     ${testFrameworkTarget}
     )
 	</code></pre></td>
@@ -45,7 +45,7 @@ If a separate CMakeLists.txt for UnitTest should be generate, some points have t
     
     target_link_libraries(gtest_${targetName}
     gtest_${targetName}_sut
-    gtest_esr_all_logger_sut
+    gtest_esr_all_<b>logger</b>_sut
     ${testFrameworkTarget}
     )
 	</code></pre></td>

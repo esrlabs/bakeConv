@@ -1,7 +1,7 @@
 <!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
 <html>
 <head>
-<title>Documentation of the bake converter</title>
+<title>Documentation of the bakeConv</title>
 <style type="text/css">
 #rundrum {
   border-width:1px;
@@ -13,11 +13,22 @@
 </head>
 
 <body>
-<h1>How to use bake converter on command line</h1>
+<h1>How to use bakeConv on command line</h1>
 
-<pre id="rundrum"><code>bakeConv -f /convert/Converter.config</code></pre>
+<p>Call "bakeConv -h" to display the command line options.</p>
+<b>-f &#60;filename&#62;</b> is the most important option.
 
-If you want to convert just one project, then use the following:
-<pre id="rundrum"><code>bakeConv -f /convert/Converter.config -p projToConvert</code></pre>
+<p>If you want to start the conversion process, switch to the directory where your config file is and call</p>
+<pre id="rundrum"><code>bakeConv -f Converter.config</code></pre>
+
+If you want to convert just one project (which is defined in your config file), then use
+<pre id="rundrum"><code>bakeConv -f Converter.config -p projToConvert</code></pre>
+
+<p>Information about bakeConv via "bakeConv &#60;option&#62;"</p>
+<ul>
+<li><b>-v</b>   print version
+<li><b>--show_doc</b>   open the bakeConv documentation
+<li><b>--show_license</b>   print the license
+</ul>
 
 </body>
