@@ -115,7 +115,7 @@ def main
     puts "Call Bake..."
     bake = BConv::Bake.new(map, setMock, configFile)
     bakeLines = bake.run
-    puts bakeLines
+    #puts bakeLines
     bhash = bake.getHash(bakeLines)
     if bhash != nil
       map.each do |k,v|
