@@ -71,7 +71,8 @@ def main
       BConv::Help.printHelp
       exit(0)
     when "--show_doc"
-      Launchy.open(File.expand_path("../doc/doc.html", File.dirname(__FILE__)))
+      #Launchy.open(File.expand_path("../doc/doc.html", File.dirname(__FILE__)))
+      Launchy.open("http://esrlabs.github.io/bakeConv/")
       exit(0)
     when "--show_license"
       puts
