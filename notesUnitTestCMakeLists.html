@@ -31,23 +31,21 @@ If a separate CMakeLists.txt for UnitTest should be generate, some points have t
     <th bgcolor="#CCCCCC">CMakeLists.txt</th>
   	</tr>
   	<tr>
-    <td><pre><code>
-    ...
+    <td><pre><code> ...
     
-    target_link_libraries(gtest_${targetName}
-    gtest_${targetName}_sut
-    gtest_esr_all_<b>$$(DEPENDENCIES_FILTER)</b>_sut
-    ${testFrameworkTarget}
-    )
+ target_link_libraries(gtest_${targetName}
+ gtest_${targetName}_sut
+ gtest_esr_all_<b>$$(DEPENDENCIES_FILTER)</b>_sut
+ ${testFrameworkTarget}
+ )
 	</code></pre></td>
-    <td><pre><code>
-    ...
+    <td><pre><code> ...
     
-    target_link_libraries(gtest_${targetName}
-    gtest_${targetName}_sut
-    gtest_esr_all_<b>logger</b>_sut
-    ${testFrameworkTarget}
-    )
+ target_link_libraries(gtest_${targetName}
+ gtest_${targetName}_sut
+ gtest_esr_all_<b>logger</b>_sut
+ ${testFrameworkTarget}
+ )
 	</code></pre></td>
   	</tr>
 	</table>
