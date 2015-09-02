@@ -17,10 +17,11 @@ module BConv
     BEFORE_INFO = 3
     VAR = 4
   
-    def initialize(map, setMock, configFile)
+    def initialize(map, setMock, configFile, debugMode)
       @map = map
       @setMock = setMock
       @configFile = configFile
+      @debugMode = debugMode
     end
     
     def run
@@ -39,11 +40,10 @@ module BConv
       
       rescue Exception => e
         puts e.message
-        puts e.back_trace    #for debug mode
+        puts e.back_trace if @debugMode == true
         abort
-      end  
-      
-      abort "Error while trying to call bake!" unless $?.success?
+      end
+            
       return bakeLines
     end
     
@@ -67,20 +67,10 @@ module BConv
             value = []
             key = line.strip
             b_hash.store(key,value)
-            
-            # if key != "BAKE_INCLUDES" && key != "BAKE_SOURCES" && key != "BAKE_DEFINES"
-              # state = Bake::START_INFO           
-            # else
-              state = VAR
-            #end
+            state = VAR
           end
-        #elsif line.start_with?("") && !line.match("START_INFO") && !line.match("END_INFO")
-        #  puts "Error: Nothing else than START_INFO and END_INFO starting without blanks!"
         else
           if line.match("START_INFO") && line[0] != " "
-            # if state != Bake::BEFORE_INFO
-              # abort "Error!" 
-            # end
             state = Bake::START_INFO
           elsif line.match("END_INFO")
             state = Bake::END_INFO
@@ -91,14 +81,7 @@ module BConv
       if state != Bake::END_INFO
         puts "Error: There is a problem with END_INFO. No output file could be generated!"
         return nil
-       #raise ParseException.new("END_INFO missing") 
       end
-       
-     # begin
-       # ...
-     # rescue ParseException
-       # exit(-1)
-     # end
         
       return b_hash
     end

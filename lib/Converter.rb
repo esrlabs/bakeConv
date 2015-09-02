@@ -8,9 +8,10 @@ module BConv
  
   class Converter
   
-    def initialize(map, configFile)
+    def initialize(map, configFile, debugMode)
       @configFile = configFile
       @map = map
+      @debugMode = debugMode
     end
     
     def convert
@@ -85,7 +86,7 @@ module BConv
       raise "Error: Template file #{File.basename(templatefilename)} is empty!" if File.zero?(templatefilename)
       rescue Exception => e
         puts e.message
-        puts e.backtrace
+        puts e.back_trace if @debugMode == true
         abort
       end
     end

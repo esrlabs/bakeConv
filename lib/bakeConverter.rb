@@ -18,7 +18,9 @@ def main
   #-------------------------------------------------------
   converterConfigFile = ""
   projToConvert = ""
-  setMock = false  
+  cfgFleFromCmdLne = ""
+  setMock = false
+  debugMode = false  
  
   begin
   args = ARGV.select.each_with_index{|str, i| i.even? && str[0] == "-"}
@@ -45,7 +47,8 @@ def main
   Hash[(args.zip opts)].each do |k,v|
     case k
     when "-f"
-      converterConfigFile = v
+      cfgFleFromCmdLne = v
+      converterConfigFile = File.expand_path(v)
       abort "Error: Config file is missing!" if converterConfigFile == nil
     when "--file"
       converterConfigFile = v
@@ -70,6 +73,8 @@ def main
     when "-h"
       BConv::Help.printHelp
       exit(0)
+    when "--debug"
+      debugMode = true
     when "--show_doc"
       #Launchy.open(File.expand_path("../doc/doc.html", File.dirname(__FILE__)))
       Launchy.open("http://esrlabs.github.io/bakeConv/")
@@ -90,16 +95,17 @@ def main
    
   rescue => e
   puts "Error in arguments!"
-  #puts e.to_s    #for debug mode
+  puts e.to_s if debug_mode == true
   exit(-1)
   end
 
-  configFile = converterConfigFile.gsub('\\','/')   
+  configFile = converterConfigFile.gsub('\\','/')  
+  cfgFleFromCmdLne = cfgFleFromCmdLne.gsub('\\','/') 
  
   #-------------------------------------------------------
   # Starting converting process:
   #-------------------------------------------------------
-  cp = BConv::ConfigParser.new(configFile, projToConvert)
+  cp = BConv::ConfigParser.new(configFile, projToConvert, debugMode)
   
   puts "Reading config..."
   mappings = cp.readConfig
@@ -113,9 +119,10 @@ def main
     idxCnt += 1
     puts "Convert #{idxCnt} from #{mappings.length}: #{map['Proj2Convert']} (#{map['BuildConfig']})"
     puts "Call Bake..."
-    bake = BConv::Bake.new(map, setMock, configFile)
+    bake = BConv::Bake.new(map, setMock, configFile, debugMode)
     bakeLines = bake.run
-    #puts bakeLines
+    puts bakeLines if debugMode == true
+    abort "Error while trying to call bake!" unless $?.success?
     bhash = bake.getHash(bakeLines)
     if bhash != nil
       map.each do |k,v|
@@ -124,11 +131,11 @@ def main
         end
       end
     end
-    bhash_adapted = BConv::PathAdapt.adapt_path(map['OutputFileName'], bhash)
+    bhash_adapted = BConv::PathAdapt.adapt_path(map['OutputFileName'], bhash, cfgFleFromCmdLne)
     
     if bhash_adapted != nil
       bhash_adapted.each {|k,v| map[k] = v unless (map.has_key?k && k!="DEPENDENCIES_FILTER")}
-      conv = BConv::Converter.new(map, configFile)
+      conv = BConv::Converter.new(map, configFile, debugMode)
       puts "Convert..."
       conv.convert
     end

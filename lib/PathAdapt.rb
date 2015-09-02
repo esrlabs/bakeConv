@@ -10,12 +10,12 @@ module BConv
     SLASH = "/"
     COLON = ":"
     
-    def self.adapt_path(outputFilePath, bhash)
+    def self.adapt_path(outputFilePath, bhash, cfgFleFromCmdLne)
       diffPathLevels, diffPathLevelsDown = 0, 0
       dir, diffUp = "", ""
       diffArr = []
       
-      splitOutputFile = File.expand_path(File.dirname(outputFilePath)).split("/")
+      splitOutputFile = File.expand_path(File.dirname(outputFilePath),File.dirname(cfgFleFromCmdLne)).split("/")
       splitProjMeta   = bhash['BAKE_PROJECTDIR'][0].split("/")
   
       if splitOutputFile.length > splitProjMeta.length

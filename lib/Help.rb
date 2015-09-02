@@ -13,7 +13,8 @@ module BConv
       puts "-v, --version                      Print version."
       puts "-h, --help                         Print this help."
       puts "--show_doc                         Open documentation."
-      puts "--show_license                     Print the license." 
+      puts "--show_license                     Print the license."
+      puts "--debug                            Print debug output."
       
     end
     

@@ -6,9 +6,10 @@ module BConv
 
   class ConfigParser
     
-    def initialize(filename, projToConvert)
+    def initialize(filename, projToConvert, debugMode)
       @filename = filename
       @projToConvert = projToConvert
+      @debugMode = debugMode
     end
     
     def readConfig
@@ -73,7 +74,7 @@ module BConv
         end
       rescue Exception => e
         puts e.message
-        #puts e.back_trace    #for debug mode
+        puts e.back_trace if @debugMode == true
         abort
       end
     end
