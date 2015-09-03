@@ -18,13 +18,12 @@ bakeConv converts from bake to e.g. CMakeLists files, with the help of a config 
 
 <p>bake provides e.g.</p>
 <ul>
-<li><b>BAKE_SOURCES</b> - provides all source files	
-<li><b>BAKE_HEADERS</b> - provides all header files	
-<li><b>BAKE_INCLUDES</b> - provides all includes	
+<li><b>BAKE_SOURCES</b> - provides all source files		
+<li><b>BAKE_INCLUDES</b> - provides all header files	
 </ul>
 
-To get to know all information, which bake provides, use
-<pre id="rundrum"><code>bake -p projectName --conversion_info</code></pre>
+To get to know all information, which bake provides, use e. g.
+<pre id="rundrum"><code>bake UnitTest -p projectName --conversion_info</code></pre>
 
 <p>All variables (also self defined) have to have the following appearance in the template file</p>
 <pre id="rundrum"><code>$$(...)   e.g. $$(BAKE_SOURCES)</code></pre>
