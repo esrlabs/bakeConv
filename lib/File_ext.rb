@@ -5,7 +5,7 @@
 class File
   
   def self.isAbsolute?(filename) 
-    File.expand_path(filename) == filename
+    return File.expand_path(filename) == filename
   end
   
 end

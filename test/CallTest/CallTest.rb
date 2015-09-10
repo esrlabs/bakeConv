@@ -17,7 +17,7 @@ class CallTest < MiniTest::Unit::TestCase
   def test_call_configFile_missing
     res = `ruby #{@@workingdir} -f --mock 2>&1`
     assert_equal false, $?.success?
-    assert_includes res, 'Config file is missing'
+    assert_includes res, 'Error in arguments'
   end
   
   def test_call_misspelled

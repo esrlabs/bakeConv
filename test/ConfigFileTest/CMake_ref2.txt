@@ -6,9 +6,9 @@ name of the project: SwcTestProject ...
 and here some stuff
 
 set(sourceFiles
-dir/blubb/test/x.cpp
-dir/blubb/test/y.cpp
-dir/blubb/test/z.cpp
+dir/blubb/test/../../../x.cpp
+dir/blubb/test/../../../y.cpp
+dir/blubb/test/../../../z.cpp
 )
 
 

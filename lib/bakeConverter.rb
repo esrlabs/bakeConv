@@ -20,7 +20,8 @@ def main
   projToConvert = ""
   cfgFleFromCmdLne = ""
   setMock = false
-  debugMode = false  
+  debugMode = false
+  mapConverted = 0
  
   begin
   args = ARGV.select.each_with_index{|str, i| i.even? && str[0] == "-"}
@@ -36,7 +37,7 @@ def main
   end
 
   if ARGV.length == 1 && ARGV[0] != "--help" && ARGV[0] != "-h" && ARGV[0] != "--show_doc" && ARGV[0] != "--version" && ARGV[0] != "-v" && ARGV[0] != "--show_license" && ARGV[0] != "--mock"
-    puts "Error: Too less arguments! (try --help)"
+    #puts "Error: Too less arguments! (try --help)"
     puts "Config file is missing!" if opts[0] == nil
     exit(-1)
   elsif ARGV.length == 0 || (ARGV.length == 1 && ARGV[0] == "--mock")
@@ -93,9 +94,9 @@ def main
     end
   end
    
-  rescue => e
+  rescue Exception => e
   puts "Error in arguments!"
-  puts e.to_s if debug_mode == true
+  puts e.backtrace if debugMode == true
   exit(-1)
   end
 
@@ -108,11 +109,10 @@ def main
   cp = BConv::ConfigParser.new(configFile, projToConvert, debugMode)
   
   puts "Reading config..."
-  mappings = cp.readConfig
+  status, mappings = cp.readConfig
   
   abort "Error: Config file is empty OR the requested project(s) is commented out!" if mappings.length == 0
   puts "Converting #{mappings.length} projects..."
-  
   idxCnt = 0
   
   mappings.each do |map|
@@ -130,18 +130,26 @@ def main
           bhash = BConv::Filter.hashFilter(k, v, bhash)
         end
       end
+      bhash_adapted = BConv::PathAdapt.adapt_path(map['OutputFileName'], bhash, cfgFleFromCmdLne, debugMode)
     end
-    bhash_adapted = BConv::PathAdapt.adapt_path(map['OutputFileName'], bhash, cfgFleFromCmdLne)
     
     if bhash_adapted != nil
       bhash_adapted.each {|k,v| map[k] = v unless (map.has_key?k && k!="DEPENDENCIES_FILTER")}
       conv = BConv::Converter.new(map, configFile, debugMode)
       puts "Convert..."
-      conv.convert
+      status = conv.convert
+      mapConverted = mapConverted + 1 if status == 0
     end
   end
   
-  puts "Done"
+  puts "Done: Converted #{mapConverted} from #{mappings.length} projects."
+  
+  if (mapConverted == mappings.length) && (mapConverted != 0)
+    return exit(0)
+  else
+    return exit(1)
+  end
+  
 end
 
 #-------------------------------------------------------

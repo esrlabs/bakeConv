@@ -10,13 +10,15 @@ module BConv
     SLASH = "/"
     COLON = ":"
     
-    def self.adapt_path(outputFilePath, bhash, cfgFleFromCmdLne)
+    def self.adapt_path(outputFilePath, bhash, cfgFleFromCmdLne, debugMode)
       diffPathLevels, diffPathLevelsDown = 0, 0
       dir, diffUp = "", ""
       diffArr = []
       
-      splitOutputFile = File.expand_path(File.dirname(outputFilePath),File.dirname(cfgFleFromCmdLne)).split("/")
-      splitProjMeta   = bhash['BAKE_PROJECTDIR'][0].split("/")
+      begin
+      splitOutputFile = File.expand_path(File.dirname(outputFilePath),File.dirname(cfgFleFromCmdLne)).split("/") 
+      splitProjMeta   = bhash['BAKE_PROJECTDIR'][0].split("/") if bhash['BAKE_PROJECTDIR'][0].include?("/") && bhash['BAKE_PROJECTDIR'] != nil
+      #raise "Error: BAKE_PROJDIR is missing!" if bhash['BAKE_PROJECTDIR'] == nil
   
       if splitOutputFile.length > splitProjMeta.length
         diffPathLevels = splitOutputFile.length-splitProjMeta.length
@@ -72,6 +74,11 @@ module BConv
             directories.store(key, value)
           end
         end
+      end
+      rescue Exception => e
+        puts e.message
+        puts e.backtrace.inspect if debugMode == true
+        exit(1)
       end
       return directories
     end

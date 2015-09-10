@@ -59,7 +59,6 @@ module BConv
               value << line.strip if value != nil
               value = line.strip if value == nil
               b_hash.store(key,value)
-             
             end
         elsif line.start_with?(" ") && line[1] != " "
           if state == Bake::START_INFO || state == Bake::VAR

@@ -89,6 +89,7 @@ module BConv
         puts e.back_trace if @debugMode == true
         abort
       end
+      return 0
     end
   
     def findAndReplace(key, line, fout, prefix, postfix)

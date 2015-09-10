@@ -26,6 +26,7 @@ module BConv
               while(line = l.gets) != nil
                 line.gsub!('\\','/')
                 ar = line.split("=")
+                
                 if (ar.length == 2)
                   comPos = ar[1].index("#")
                   ar[1] = ar[1][0..comPos-1] if comPos != nil
@@ -42,24 +43,16 @@ module BConv
                   raise "Error: OutputFileName parameter from Mapping in line #{lineNumber} is missing!" if mapping.has_key?('OutputFileName') == false
                   raise "Error: TemplateFile parameter from Mapping in line #{lineNumber} is missing!" if mapping.has_key?('TemplateFile') == false
                   
+                  #raise "Error: Parameter in #{File.basename(@filename)}, Mapping line #{lineNumber} is missing!" if ar[0].strip == ""
+                  
                   if @projToConvert != "" && @projToConvert != mapping['Proj2Convert']
                     mapping = {}
                   else
                     mappings << mapping
                   end
-                  
-                  # if @projToConvert.length != 0
-                    # @projToConvert.each do |val|
-                      # if val == mapping['Proj2Convert']
-                        # mappings << mapping
-                      # end
-                    # end
-                  # else
-                    # mappings << mapping
-                  # end
-                  
                   setEndLabel = true
                   break
+                  
                 elsif line.include?("Mapping")
                   raise "Error: end label } from Mapping in line #{lineNumber} is missing!"
                 end
@@ -70,7 +63,7 @@ module BConv
               raise "Error: Mapping keyword in front of line #{lineNumber} is missing?"
             end
           end
-          return mappings
+          return 0, mappings
         end
       rescue Exception => e
         puts e.message
