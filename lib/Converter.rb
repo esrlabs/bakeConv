@@ -15,25 +15,35 @@ module BConv
     end
     
     def convert
-      outputfilename = Util.makeAbsolute(@map['OutputFileName'], @configFile)
+      outputfilename = Util.makeAbsolute(@map['OutputFile'], @configFile)
       templatefilename = Util.makeAbsolute(@map['TemplateFile'], @configFile)
 
       lineIdx = 0
       tmpLineIdx = 0
       set = true
+     
+      @map.delete_if{|k,_| (k=="EXCLUDE_BAKE_DEPENDENCIES" || k=="EXCLUDE_BAKE_SOURCES" || k=="EXCLUDE_BAKE_INCLUDES") } #not useful anymore
+      
       begin
       File.open(outputfilename, 'w') do |fout|
         File.open(templatefilename) do |fread|
           File.readlines(fread).each do |line|
             lineIdx += 1
             wroteLine = false
+            
             @map.keys.each do |key|
-                           
               if line.include?(key.to_s) && @map[key].include?(".txt")
                 preAndPostfix = line.scan(/(.*)\$\$\(#{key}\)(.*)/)
+                preAndPostfixOpt = line.scan(/(.*)\$OPTION\(#{key}\)(.*)/)
+                
                 if preAndPostfix.length == 1
                   prefix = preAndPostfix[0][0]
                   postfix = preAndPostfix[0][1]
+                end
+                #need some cosmetics!
+                if preAndPostfixOpt.length == 1
+                  prefix = preAndPostfixOpt[0][0]
+                  postfix = preAndPostfixOpt[0][1]
                 end
                 
                 filename = Util.makeAbsolute(@map[key], @configFile)
@@ -46,14 +56,15 @@ module BConv
                     @map.keys.each do |k|
                       wroteLine = findAndReplace(k, l, fout, prefix, postfix)
                       break if wroteLine == true
-                    end
+                    end                   
+                    
                     if wroteLine == false 
                       l.strip!
                       l = prefix + l + postfix + "\n"
                       m = l.match(/\$\$\((.*)\)/)
-                      if m
-                        puts "Info: Key $$(#{m[1]}) in #{File.basename(filename)}, line #{tmpLineIdx.to_s} wasn\'t replaced!" if m  
-                      end
+                      opt = l.match(/\$OPTION\((.*)\)/)
+                      raise "Error: Key $$(#{m[1]}) in #{File.basename(filename)}, line #{tmpLineIdx.to_s} wasn\'t replaced!" if m
+                      puts "Info: Key $OPTION(#{opt[1]}) in #{File.basename(filename)}, line #{tmpLineIdx.to_s} wasn\'t replaced!" if opt  
                       fout.write(l)
                       set = false
                     end
@@ -66,15 +77,18 @@ module BConv
               elsif line.match(/\$\$\(#{key}\)/)
                 wroteLine = findAndReplace(key, line, fout, "", "")
                 break
+              elsif line.match(/\$OPTION\(#{key}\)/)
+                wroteLine = findAndReplace(key, line, fout, "", "")
+                break
               end
             end
             
             if wroteLine == false
               if set == true
                 m = line.match(/\$\$\((.*)\)/)
-                if m
-                  puts "Info: Key $$(#{m[1]}) in #{File.basename(templatefilename)}, line #{lineIdx.to_s} wasn\'t replaced!"
-                end
+                opt = line.match(/\$OPTION\((.*)\)/)
+                raise "Error: Key $$(#{m[1]}) in #{File.basename(templatefilename)}, line #{lineIdx.to_s} wasn\'t replaced!" if m
+                puts "Info: Key $OPTION(#{opt[1]}) in #{File.basename(templatefilename)}, line #{lineIdx.to_s} wasn\'t replaced!" if opt
                 fout.write(line)
               end
               set = true
@@ -95,11 +109,13 @@ module BConv
     def findAndReplace(key, line, fout, prefix, postfix)
       wroteLine = false
       found = line.scan(/(.*)\$\$\(#{key}\)(.*)/)
-    
+      foundOpt = line.scan(/(.*)\$OPTION\(#{key}\)(.*)/)
+      
+      found = foundOpt if (found.length==0 && foundOpt.length!=0)
+      
       if found.length == 1
         pre = found[0][0]
         post = found[0][1]
-
         if @map[key].kind_of?(Array)
           @map[key].each do |val|
             line = prefix + pre + val.to_s + post + postfix + "\n"
@@ -113,6 +129,10 @@ module BConv
         end
       elsif line.include?("/\$\$\(#{key}\)/") && found.length == 0
         line.gsub!(/\$\$\(#{key}\)/, @map[key].to_s)
+        fout.write(line)
+        wroteLine = true
+      elsif line.include?("/\$OPTION\(#{key}\)/") && found.length == 0
+        line.gsub!(/\$OPTION\(#{key}\)/, @map[key].to_s)
         fout.write(line)
         wroteLine = true
       end

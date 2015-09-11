@@ -28,9 +28,11 @@ module BConv
                 ar = line.split("=")
                 
                 if (ar.length == 2)
-                  comPos = ar[1].index("#")
-                  ar[1] = ar[1][0..comPos-1] if comPos != nil
-                  mapping.store(ar[0].strip,ar[1].strip)
+                  if ar[0].strip[0] != "#"
+                    comPos = ar[1].index("#")
+                    ar[1] = ar[1][0..comPos-1] if comPos != nil
+                   mapping.store(ar[0].strip,ar[1].strip)
+                  end
                 elsif ar[1] == ""
                   mapping.store(ar[0].strip,"")
                 end
@@ -40,7 +42,7 @@ module BConv
                   raise "Error: MainProj parameter from Mapping in line #{lineNumber} is missing!" if mapping.has_key?('MainProj') == false
                   raise "Error: BuildConfig parameter from Mapping in line #{lineNumber} is missing!" if mapping.has_key?('BuildConfig') == false
                   raise "Error: Proj2Convert parameter from Mapping in line #{lineNumber} is missing!" if mapping.has_key?('Proj2Convert') == false
-                  raise "Error: OutputFileName parameter from Mapping in line #{lineNumber} is missing!" if mapping.has_key?('OutputFileName') == false
+                  raise "Error: OutputFile parameter from Mapping in line #{lineNumber} is missing!" if mapping.has_key?('OutputFile') == false
                   raise "Error: TemplateFile parameter from Mapping in line #{lineNumber} is missing!" if mapping.has_key?('TemplateFile') == false
                   
                   #raise "Error: Parameter in #{File.basename(@filename)}, Mapping line #{lineNumber} is missing!" if ar[0].strip == ""

@@ -77,7 +77,6 @@ def main
     when "--debug"
       debugMode = true
     when "--show_doc"
-      #Launchy.open(File.expand_path("../doc/doc.html", File.dirname(__FILE__)))
       Launchy.open("http://esrlabs.github.io/bakeConv/")
       exit(0)
     when "--show_license"
@@ -126,15 +125,15 @@ def main
     bhash = bake.getHash(bakeLines)
     if bhash != nil
       map.each do |k,v|
-        if (k == "GMOCK_FILTER" && v == "true") || k == "DEPENDENCIES_FILTER" 
+        if (k == "EXCLUDE_BAKE_SOURCES") || (k == "EXCLUDE_BAKE_INCLUDES") || (k == "EXCLUDE_BAKE_DEPENDENCIES")          
           bhash = BConv::Filter.hashFilter(k, v, bhash)
         end
       end
-      bhash_adapted = BConv::PathAdapt.adapt_path(map['OutputFileName'], bhash, cfgFleFromCmdLne, debugMode)
+      bhash_adapted = BConv::PathAdapt.adapt_path(map['OutputFile'], bhash, cfgFleFromCmdLne, debugMode)
     end
     
     if bhash_adapted != nil
-      bhash_adapted.each {|k,v| map[k] = v unless (map.has_key?k && k!="DEPENDENCIES_FILTER")}
+      bhash_adapted.each {|k,v| map[k] = v unless (map.has_key?k)}
       conv = BConv::Converter.new(map, configFile, debugMode)
       puts "Convert..."
       status = conv.convert

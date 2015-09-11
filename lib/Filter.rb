@@ -8,29 +8,17 @@ module BConv
   
   class Filter
     
-    def self.hashFilter(keySearched, doFilter, hash)
+    def self.hashFilter(keySearched, forFiltering, hash)      
+      forFilteringArr = forFiltering[1..-2].split(",").map {|elm| elm.strip}
       hash.each do |key, value|
-        if keySearched == "GMOCK_FILTER"
-          value.each { |elm| value.delete(elm) if elm.match(/\/?gmock\/?/) }
-        elsif keySearched == "DEPENDENCIES_FILTER"  
-          if doFilter == "true"
-            hash.delete(key) if key == "BAKE_DEPENDENCIES"
-          else
-            hash.delete(key) if key == "BAKE_DEPENDENCIES_FILTERED"
+        if key == keySearched.split("EXCLUDE_")[1]
+          forFilteringArr.each do |elm|
+            value.each do |val|
+              if val.include?(elm)
+                value.delete(val)
+              end
+            end
           end
-        end          
-      end
-            
-      if keySearched == "DEPENDENCIES_FILTER"
-        hvalues = []
-        if doFilter == "false"
-          hash["BAKE_DEPENDENCIES"].each { |v| hvalues << v }
-          hash.store("DEPENDENCIES_FILTER", hvalues)
-          hash.delete("BAKE_DEPENDENCIES")
-        else  
-          hash["BAKE_DEPENDENCIES_FILTERED"].each { |v| hvalues << v }
-          hash.store("DEPENDENCIES_FILTER", hvalues)
-          hash.delete("BAKE_DEPENDENCIES_FILTERED")
         end
       end 
       return hash
