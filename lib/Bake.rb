@@ -6,12 +6,8 @@ require_relative 'Converter'
 
 module BConv
 
-  # class ParserException < Exception
-  # end
-
   class Bake
-    
-    #enums
+
     START_INFO = 1
     END_INFO = 2
     BEFORE_INFO = 3

@@ -63,10 +63,10 @@ def main
     when "--mock"
       setMock = true
     when "--version"
-      puts "bakeConverter #{BConv::Version.number}"
+      puts "bakeConv #{BConv::Version.number}"
       exit(0)
     when "-v"
-      puts "bakeConverter #{BConv::Version.number}"
+      puts "bakeConv #{BConv::Version.number}"
       exit(0)
     when "--help"
       BConv::Help.printHelp
@@ -94,7 +94,6 @@ def main
   end
    
   rescue Exception => e
-  puts "Error in arguments!"
   puts e.backtrace if debugMode == true
   exit(-1)
   end

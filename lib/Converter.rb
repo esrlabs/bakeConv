@@ -39,9 +39,7 @@ module BConv
                 if preAndPostfix.length == 1
                   prefix = preAndPostfix[0][0]
                   postfix = preAndPostfix[0][1]
-                end
-                #need some cosmetics!
-                if preAndPostfixOpt.length == 1
+                elsif preAndPostfixOpt.length == 1
                   prefix = preAndPostfixOpt[0][0]
                   postfix = preAndPostfixOpt[0][1]
                 end
