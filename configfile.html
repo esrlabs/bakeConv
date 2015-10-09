@@ -15,9 +15,9 @@
 <body>
 <h1>The configuration file Converter.config</h1>
 <ul>
-<li>bakeConv needs a config file, which define a couple of mappings to convert</li>
-<li>for every project you want to convert, you need a "Mapping" scope</li>
-<li>each "Mapping" contains a number of required and optional variables</li>
+<li>bakeConv needs a config file, which define a couple of projects to convert</li>
+<li>every project has its own scope, which is defined by the braces { ... } (the most inner one)</li>
+<li>there are mandatory and optional variables you have/may to define</li>
 </ul>
 <h2>Example</h2>
 
@@ -26,29 +26,55 @@
     <th bgcolor="#CCCCCC">Converter.config</th>
   </tr>
   <tr>
-    <td><pre><code> Mapping {
+    <td><pre><code>
+    {
  	Workspace = [../../..]
-	MainProj = ../bswMain
-	BuildConfig = main
-	Proj2Convert = lifecycle
-	OutputFileName = ../../../lifecycle/CMakeLists.txt
-	TemplateFile = ../templates/template_libraryWithUnitTest.txt 
- }
+	{
+	  MainProj = ../bswMain
+	  BuildConfig = main
+	  TemplateFile = ../templates/template_libraryWithUnitTest.txt
+	  {
+	      Proj2Convert = lifecycle
+	      OutputFile = ../../../lifecycle/CMakeLists.txt		
+	  }
+	  {
+	      Proj2Convert = common
+	      OutputFile = ../../../common/CMakeLists.txt
+	  }
+	}
+	{
+	  BuildConfig = UnitTest
+	  TemplateFile = ../templates/template_UnitTest.txt
+	  GMOCK_TEMPLATE = ../templates/template_GMock.txt
+	  EXCLUDE_BAKE_DEPENDENCIES = [gmock, logger]
+	  EXCLUDE_BAKE_INCLUDES = [gmock]
+	  {
+	      MainProj = ../../../lifecycle
+	      Proj2Convert = lifecycle,UnitTest
+	      OutputFile = ../../../lifecycle/test/CMakeLists.txt
+	  }
+	  {
+	      MainProj = ../../../common
+	      Proj2Convert = common,UnitTest
+	      OutputFile = ../../../common/test/CMakeLists.txt
+	  }
+	}
+   }
  </code></pre></td>
   </tr>
 </table>
 
-<p>The first four variables <b>Workspace (-w in bake), MainProj (-m in bake), BuildConfig (-b in bake), Proj2Convert (-p in bake)</b> are required by bake and have
-to be defined. Usage like in bake (see <a href="https://esrlabs.com/gems/doc/bake-toolkit">bake documentation</a>).</p>
-<p><b>OutputFileName and TemplateFile</b> are also required variables. With</p>
-<pre id="rundrum"><code>OutputFileName = ../../../lifecycle/CMakeLists.txt
+<p>The variables <b>Workspace (-w in bake), MainProj (-m in bake), BuildConfig (-b in bake), Proj2Convert (-p in bake)</b> are required by bake and have
+to be defined. Usage like in bake (see <a href="http://esrlabs.github.io/bake/">bake documentation</a>).</p>
+<p><b>OutputFile and TemplateFile</b> are also required variables. With</p>
+<pre id="rundrum"><code>OutputFile = ../../../lifecycle/CMakeLists.txt
 TemplateFile = ../templates/template_libraryWithUnitTest.txt</code></pre>
 bakeConv will be informed where the converted output should be stored and which template file should be used.
 <p><b>Attention: </b>All the paths are <b><font color="red">relative to the Converter.config</font></b> file path! You can also use absolute paths.</p>
 <h2>Self defined variables</h2>
 <ul>
-	<li>bake will provide <b>BAKE_SOURCES, BAKE_INCLUDES, BAKE_DEFINES, BAKE_DEPENDENCIES and BAKE_DEPENDENCIES_FILTERED</b></li>
-	<li>BAKE_DEPENDENCIES and BAKE_DEPENDENCIES_FILTERED are summarized in one variable &#x2192; DEPENDENCIES_FILTER (will be needed for UnitTest CMakeLists &#x2192; <a href="notesUnitTestCMakeLists.html">Notes for UnitTest CMakeLists</a>)</li>
+	<li>bake will provide <b>BAKE_SOURCES, BAKE_INCLUDES and BAKE_DEPENDENCIES</b></li>
+	<!--<li>BAKE_DEPENDENCIES and BAKE_DEPENDENCIES_FILTERED are summarized in one variable &#x2192; DEPENDENCIES_FILTER (will be needed for UnitTest CMakeLists &#x2192; <a href="notesUnitTestCMakeLists.html">Notes for UnitTest CMakeLists</a>)</li>-->
 	<li>all other variables have to be defined by the user in the config file</li>
 </ul>
 
@@ -74,10 +100,16 @@ bakeConv will be informed where the converted output should be stored and which 
 <p>should be defined. Otherwise $$(BAKE_SOURCES) will appear in the output file.</p>
 <p>In general, with</p>
 <pre id="rundrum"><code>TEXT =</code></pre>
-$$(TEXT) will be replaced by a space.
+$$(TEXT) (in the template file) will be replaced by a space.
 
 <p><b>Attention: </b>The self defined variables in the config file should be of course the same as in the template file!</p>
 
-<p><b>Notice: </b>With # you have the possibility to comment out a line in the config file.</p>
+<h2>Filtering</h2>
+If you want to filter some files e.g. gmock include files, use the following:
+<pre id="rundrum"><code>EXCLUDE_BAKE_INCLUDES = [gmock]</code></pre>
+Beside this you have the possibility to filter source files and dependencies as well via <b>EXCLUDE_BAKE_SOURCES = [...], EXCLUDE_BAKE_DEPENDENCIES = [...]</b>. Filtering "gmock" dependency will be needed for UnitTest CMakeLists (&#x2192; <a href="notesUnitTestCMakeLists.html">Notes for UnitTest CMakeLists</a>)
+ 
+<h2>General information</h2>
+With # you have the possibility to comment out a line in the config file.</p>
  
 </body>

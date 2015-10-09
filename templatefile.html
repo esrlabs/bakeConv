@@ -25,8 +25,10 @@ bakeConv converts from bake to e.g. CMakeLists files, with the help of a config 
 To get to know all information, which bake provides, use e. g.
 <pre id="rundrum"><code>bake UnitTest -p projectName --conversion_info</code></pre>
 
-<p>All variables (also self defined) have to have the following appearance in the template file</p>
+<p>All mandatory variables (BAKE_SOURCES, BAKE_INCLUDES) have to have the following appearance in the template file</p>
 <pre id="rundrum"><code>$$(...)   e.g. $$(BAKE_SOURCES)</code></pre>
+<p>Optional variables e.g. BAKE_DEPENDENCIES have the following syntax</p>
+<pre id="rundrum"><code>$OPTION(...)   e.g. $OPTION(BAKE_DEPENDENCIES)</code></pre>
 
 <h3>Examples:</h3>
 <table border="1">
@@ -83,11 +85,11 @@ To get to know all information, which bake provides, use e. g.
 
  set (testFrameworkTarget "")
     
- <b>$$(GMOCK_TEMPLATE)</b>    
+ <b>$OPTION(GMOCK_TEMPLATE)</b>    
     
  target_link_libraries(gtest_${targetName}
     gtest_${targetName}_sut
-    gtest_esr_all_<b>$$(DEPENDENCIES_FILTER)</b>_sut
+    gtest_esr_all_<b>$OPTION(BAKE_DEPENDENCIES)</b>_sut
     ${testFrameworkTarget}
  )
  </code></pre></td>
@@ -104,6 +106,8 @@ To get to know all information, which bake provides, use e. g.
  </code></pre></td>
   </tr>
 </table>
+
+
 
 <p><b>Note:</b> All templates which should be used have to be defined in your config file.</p>
 
