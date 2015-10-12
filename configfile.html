@@ -1,7 +1,7 @@
 <!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
 <html>
 <head>
-<title>Documentation of the bake converter</title>
+<title>The configuration file Converter.config</title>
 <style type="text/css">
 #rundrum {
   border-width:1px;
@@ -69,7 +69,7 @@ to be defined. Usage like in bake (see <a href="http://esrlabs.github.io/bake/">
 <p><b>OutputFile and TemplateFile</b> are also required variables. With</p>
 <pre id="rundrum"><code>OutputFile = ../../../lifecycle/CMakeLists.txt
 TemplateFile = ../templates/template_libraryWithUnitTest.txt</code></pre>
-bakeConv will be informed where the converted output should be stored and which template file should be used.
+bakeConv will be informed where the converted output file should be stored and which template file should be used.
 <p><b>Attention: </b>All the paths are <b><font color="red">relative to the Converter.config</font></b> file path! You can also use absolute paths.</p>
 <h2>Self defined variables</h2>
 <ul>
@@ -100,7 +100,7 @@ bakeConv will be informed where the converted output should be stored and which 
 <p>should be defined. Otherwise $$(BAKE_SOURCES) will appear in the output file.</p>
 <p>In general, with</p>
 <pre id="rundrum"><code>TEXT =</code></pre>
-$$(TEXT) (in the template file) will be replaced by a space.
+$$(TEXT) will be replaced by a space.
 
 <p><b>Attention: </b>The self defined variables in the config file should be of course the same as in the template file!</p>
 

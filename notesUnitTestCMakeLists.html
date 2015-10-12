@@ -1,7 +1,7 @@
 <!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
 <html>
 <head>
-<title>Notes for UnitTest CMakeLists</title>
+<title>Notes for CMakeLists for UnitTest</title>
 <style type="text/css">
 #rundrum {
   border-width:1px;
@@ -14,17 +14,17 @@
 
 <body>
 <h1>Notes for CMakeLists for UnitTest</h1>
-If a separate CMakeLists.txt for UnitTest should be generate, some points have to take into account:
+If a separate CMakeLists.txt for UnitTest should be generate
 <ul>
-	<li>In the config file one has to define</li>
-	<pre id="rundrum"><code>GMOCK_FILTER = true</code></pre>
+	<li>bake dependency "gmock" needs to be filtered</li>
+	<pre id="rundrum"><code>EXCLUDE_BAKE_DEPENDENCIES = [gmock]</code></pre>
 	<p>This has the consequence, that the gmock pathes will be removed. "make" will do not have problems if gmock is filtered, otherwise linker errors will be occur.</p>
 	
-	<li>Additionally one has to define</li>
-	<pre id="rundrum"><code>DEPENDENCIES_FILTER = true/false</code></pre>
-	<p>If DEPENDENCIES_FILTER is set "true", $$(DEPENDENCIES_FILTER) in the template file will be replaced by the content of BAKE_DEPENDENCIES_FILTERED respectively the content of BAKE_DEPENDENCIES if the value is "false". </p>
+	<li>Additionally</li>
+	<pre id="rundrum"><code>EXCLUDE_BAKE_INCLUDES = [gmock]</code></pre>
+	<p>is needed.</p>
 	
-	<h3>Example: (DEPENDENCIES_FILTER = true)</h3>	
+	<h3>Example:</h3>	
 	<table border="1">
   	<tr>
     <th bgcolor="#CCCCCC">template_UnitTest.txt</th>
@@ -35,7 +35,7 @@ If a separate CMakeLists.txt for UnitTest should be generate, some points have t
     
  target_link_libraries(gtest_${targetName}
  gtest_${targetName}_sut
- gtest_esr_all_<b>$$(DEPENDENCIES_FILTER)</b>_sut
+ gtest_esr_all_<b>$OPTION(BAKE_DEPENDENCIES)</b>_sut
  ${testFrameworkTarget}
  )
 	</code></pre></td>
