@@ -24,10 +24,14 @@ def main
   mapConverted = 0
  
   begin
+  if ARGV[0] == "--debug"
+    ARGV.rotate!
+  end
+    
   args = ARGV.select.each_with_index{|str, i| i.even? && str[0] == "-"}
-  opts = ARGV.select.each_with_index{|str, i| i.odd? && str[0] != "-"}
+  opts = ARGV.select.each_with_index { |str, i| i.odd? && str[0] != "-" }
   
-   #puts Hash[(args.zip opts)]
+  puts Hash[(args.zip opts)]
   
   if ARGV[0] != "--help" && ARGV[0] != "-h" && ARGV[0] != "--show_doc" && ARGV[0] != "--version" && ARGV[0] != "-v" && ARGV[0] != "--show_license" && ARGV[0] != "--mock"
     if (!ARGV.include?("-f") &&  !ARGV.include?("--file")) && ARGV.length != 0
@@ -100,6 +104,8 @@ def main
 
   configFile = converterConfigFile.gsub('\\','/')  
   cfgFleFromCmdLne = cfgFleFromCmdLne.gsub('\\','/') 
+ 
+  puts "cfgFle: #{cfgFleFromCmdLne}"
  
   #-------------------------------------------------------
   # Starting converting process:
