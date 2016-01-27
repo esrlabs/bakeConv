@@ -28,35 +28,35 @@
   <tr>
     <td><pre><code>
     {
- 	Workspace = [../../..]
+ 	Workspace = [./]
 	{
-	  MainProj = ../bswMain
+	  MainProj = tools/convert/bswMain
 	  BuildConfig = main
-	  TemplateFile = ../templates/template_libraryWithUnitTest.txt
+	  TemplateFile = tools/convert/templates/template_libraryWithUnitTest.txt
 	  {
 	      Proj2Convert = lifecycle
-	      OutputFile = ../../../lifecycle/CMakeLists.txt		
+	      OutputFile = lifecycle/CMakeLists.txt		
 	  }
 	  {
 	      Proj2Convert = common
-	      OutputFile = ../../../common/CMakeLists.txt
+	      OutputFile = common/CMakeLists.txt
 	  }
 	}
 	{
 	  BuildConfig = UnitTest
-	  TemplateFile = ../templates/template_UnitTest.txt
-	  GMOCK_TEMPLATE = ../templates/template_GMock.txt
+	  TemplateFile = tools/convert/templates/template_UnitTest.txt
+	  GMOCK_TEMPLATE = tools/convert/templates/template_GMock.txt
 	  EXCLUDE_BAKE_DEPENDENCIES = [gmock, logger]
 	  EXCLUDE_BAKE_INCLUDES = [gmock]
 	  {
-	      MainProj = ../../../lifecycle
+	      MainProj = lifecycle
 	      Proj2Convert = lifecycle,UnitTest
-	      OutputFile = ../../../lifecycle/test/CMakeLists.txt
+	      OutputFile = lifecycle/test/CMakeLists.txt
 	  }
 	  {
-	      MainProj = ../../../common
+	      MainProj = common
 	      Proj2Convert = common,UnitTest
-	      OutputFile = ../../../common/test/CMakeLists.txt
+	      OutputFile = common/test/CMakeLists.txt
 	  }
 	}
    }
@@ -67,10 +67,10 @@
 <p>The variables <b>Workspace (-w in bake), MainProj (-m in bake), BuildConfig (-b in bake), Proj2Convert (-p in bake)</b> are required by bake and have
 to be defined. Usage like in bake (see <a href="http://esrlabs.github.io/bake/">bake documentation</a>).</p>
 <p><b>OutputFile and TemplateFile</b> are also required variables. With</p>
-<pre id="rundrum"><code>OutputFile = ../../../lifecycle/CMakeLists.txt
-TemplateFile = ../templates/template_libraryWithUnitTest.txt</code></pre>
+<pre id="rundrum"><code>OutputFile = lifecycle/CMakeLists.txt
+TemplateFile = tools/convert/templates/template_libraryWithUnitTest.txt</code></pre>
 bakeConv will be informed where the converted output file should be stored and which template file should be used.
-<p><b>Attention: </b>All the paths are <b><font color="red">relative to the Converter.config</font></b> file path! You can also use absolute paths.</p>
+<p><b>Attention: </b>All the paths are <b><font color="red">relative to the path given in Workspace</font></b>! You can also use absolute paths.</p>
 <h2>Self defined variables</h2>
 <ul>
 	<li>bake will provide <b>BAKE_SOURCES, BAKE_INCLUDES and BAKE_DEPENDENCIES</b></li>
@@ -85,7 +85,7 @@ bakeConv will be informed where the converted output file should be stored and w
   </tr>
   <tr>
     <td><pre><code> SpecialDependency = logger
- GMOCK_TEMPLATE = ../templates/template_gMock.txt
+ GMOCK_TEMPLATE = tools/convert/templates/template_gMock.txt
  BAKE_SOURCES = []
  TEXT =	
  </code></pre></td>
@@ -93,7 +93,7 @@ bakeConv will be informed where the converted output file should be stored and w
 </table>
 
 <p>Several lines from another template can be insert in the main template file by: </p>
-<pre id="rundrum"><code>GMOCK_TEMPLATE = ../templates/template_gMock.txt</code></pre>
+<pre id="rundrum"><code>GMOCK_TEMPLATE = tools/convert/templates/template_gMock.txt</code></pre>
 
 <p>If one project doesn't have any source files, then an empty array</p>
 <pre id="rundrum"><code>BAKE_SOURCES = []</code></pre>
