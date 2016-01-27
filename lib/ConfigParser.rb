@@ -64,7 +64,7 @@ module BConv
         return 0, mappings
       rescue Exception => e
         puts e.message
-        puts e.back_trace if @debugMode == true
+        #puts e.back_trace if @debugMode == true
         abort
       end
     end

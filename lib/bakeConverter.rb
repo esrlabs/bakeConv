@@ -112,7 +112,7 @@ def main
   puts "Reading config..."
   status, mappings = cp.readConfig
   
-  abort "Error: Config file is empty OR the requested project(s) is commented out!" if mappings.length == 0
+  abort "Error: Config file is empty OR the requested project(s) is commented out OR the project doesn't exist!" if mappings.length == 0
   puts "Converting #{mappings.length} projects..."
   idxCnt = 0
   
@@ -131,7 +131,8 @@ def main
           bhash = BConv::Filter.hashFilter(k, v, bhash)
         end
       end
-      bhash_adapted = BConv::PathAdapt.adapt_path(map['OutputFile'], bhash, cfgFleFromCmdLne, debugMode)
+     # bhash_adapted = BConv::PathAdapt.adapt_path(map['OutputFile'], bhash, cfgFleFromCmdLne, debugMode)
+      bhash_adapted = BConv::PathAdapt.adapt_path(map['OutputFile'], bhash, map['Workspace'][1..-2], debugMode)
     end
     
     if bhash_adapted != nil

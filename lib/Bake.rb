@@ -30,9 +30,9 @@ module BConv
       cmd << '--conversion_info'
       Util.strToArray('Workspace', @map).each { |w| cmd << '-w' << w }
 
-      Dir.chdir(File.dirname(@configFile)) do      
+      #Dir.chdir(File.dirname(@configFile)) do   
         bakeLines = `#{cmd.join(' ')}`
-      end
+      #end
       
       rescue Exception => e
         puts e.message

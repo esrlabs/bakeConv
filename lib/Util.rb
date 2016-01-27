@@ -6,11 +6,11 @@ require_relative 'File_ext'
 
 class Util
   
-  def self.makeAbsolute(file, configFile)
+  def self.makeAbsolute(file, pwd)
     if File.isAbsolute?(file)
       outputfilename = file
     else
-      outputfilename = File.dirname(configFile) + "/" + file
+      outputfilename = File.join(pwd,file)
     end
     return outputfilename    
   end
