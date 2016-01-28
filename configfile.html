@@ -19,44 +19,70 @@
 <li>every project has its own scope, which is defined by the braces { ... } (the most inner one)</li>
 <li>there are mandatory and optional variables you have/may to define</li>
 </ul>
-<h2>Example</h2>
 
+<h2>Assume the following folder structure</h2>
+<table border="1">
+  <tr>
+    <th bgcolor="#CCCCCC">folder structure</th>
+  </tr>
+  <tr>
+    <td><pre><code> >> C:/projects/ESR/ExampleProject
+			|_main
+			|_sub1
+			|_sub2
+			|_tools/convert
+				|_config
+				   -> Converter.config
+				|_templates	
+				   -> CMakeTemplate.txt
+				   -> template_UnitTest.txt
+				   -> template_GMock.txt	
+ </code></pre></td>
+  </tr>
+</table>
+
+<h2>Example</h2>
+		
 <table border="1">
   <tr>
     <th bgcolor="#CCCCCC">Converter.config</th>
   </tr>
   <tr>
-    <td><pre><code>
+    <td><pre><code>    	
     {
- 	Workspace = [./]
+ 	Workspace = [../../.., C:/projects/ESR/ExampleProject]		# abolute or relative	
 	{
-	  MainProj = tools/convert/bswMain
-	  BuildConfig = main
-	  TemplateFile = tools/convert/templates/template_libraryWithUnitTest.txt
+	  MainProj = Workspace[0]/main					# i. e. MainProj = ../../../main	
+	  BuildConfig = application
+	  TemplateFile = ../templates/CMakeTemplate.txt			# relative to config file	
 	  {
-	      Proj2Convert = lifecycle
-	      OutputFile = lifecycle/CMakeLists.txt		
+	      Proj2Convert = main
+	      OutputFile = $$(BAKE_PROJECTDIR)/CMakeLists.txt		
 	  }
 	  {
-	      Proj2Convert = common
-	      OutputFile = common/CMakeLists.txt
+	      Proj2Convert = sub1
+	      OutputFile = $$(BAKE_PROJECTDIR)/CMakeLists.txt
+	  }
+	  {
+	      Proj2Convert = sub2
+	      OutputFile = $$(BAKE_PROJECTDIR)/CMakeLists.txt
 	  }
 	}
 	{
 	  BuildConfig = UnitTest
-	  TemplateFile = tools/convert/templates/template_UnitTest.txt
-	  GMOCK_TEMPLATE = tools/convert/templates/template_GMock.txt
-	  EXCLUDE_BAKE_DEPENDENCIES = [gmock, logger]
+	  TemplateFile = ../templates/template_UnitTest.txt
+	  GMOCK_TEMPLATE = ../templates/template_GMock.txt		# relative to config file
+	  EXCLUDE_BAKE_DEPENDENCIES = [gmock, sub1]
 	  EXCLUDE_BAKE_INCLUDES = [gmock]
 	  {
-	      MainProj = lifecycle
-	      Proj2Convert = lifecycle,UnitTest
-	      OutputFile = lifecycle/test/CMakeLists.txt
+	      MainProj = Workspace[1]/sub1				# i. e. MainProj = C:/projects/ESR/ExampleProject/sub1	
+	      Proj2Convert = sub1,UnitTest
+	      OutputFile = $$(BAKE_PROJECTDIR)/test/CMakeLists.txt
 	  }
 	  {
-	      MainProj = common
-	      Proj2Convert = common,UnitTest
-	      OutputFile = common/test/CMakeLists.txt
+	      MainProj = Workspace[1]/sub2
+	      Proj2Convert = sub2,UnitTest
+	      OutputFile = $$(BAKE_PROJECTDIR)/test/CMakeLists.txt
 	  }
 	}
    }
@@ -67,10 +93,19 @@
 <p>The variables <b>Workspace (-w in bake), MainProj (-m in bake), BuildConfig (-b in bake), Proj2Convert (-p in bake)</b> are required by bake and have
 to be defined. Usage like in bake (see <a href="http://esrlabs.github.io/bake/">bake documentation</a>).</p>
 <p><b>OutputFile and TemplateFile</b> are also required variables. With</p>
-<pre id="rundrum"><code>OutputFile = lifecycle/CMakeLists.txt
-TemplateFile = tools/convert/templates/template_libraryWithUnitTest.txt</code></pre>
-bakeConv will be informed where the converted output file should be stored and which template file should be used.
-<p><b>Attention: </b>All the paths are <b><font color="red">relative to the path given in Workspace</font></b>! You can also use absolute paths.</p>
+<pre id="rundrum"><code>OutputFile = $$(BAKE_PROJECTDIR)/CMakeLists.txt
+TemplateFile = ../templates/template_libraryWithUnitTest.txt</code></pre>
+bakeConv will be informed where the converted output file should be stored and which template file should be used. $$(BAKE_PROJECTDIR) will be replaced by bakConv automatically!
+
+<h2>Attention about paths</h2>
+<ul>
+<li>"Workspace" and "TemplateFile" have to be relative to the <b>CONFIG FILE</b></li>
+<li>"OutputFile" should be define in the project folder. This is defined via $$(BAKE_PROJECTDIR), which will be replaced by bakeConv.</li>
+<li>"MainProj" path should be defined with one of the Workspace Array Elements e. g. "Workspace[1]" and the name of the project module.</li>
+</ul>
+
+
+
 <h2>Self defined variables</h2>
 <ul>
 	<li>bake will provide <b>BAKE_SOURCES, BAKE_INCLUDES and BAKE_DEPENDENCIES</b></li>
@@ -85,7 +120,7 @@ bakeConv will be informed where the converted output file should be stored and w
   </tr>
   <tr>
     <td><pre><code> SpecialDependency = logger
- GMOCK_TEMPLATE = tools/convert/templates/template_gMock.txt
+ GMOCK_TEMPLATE = ../templates/template_gMock.txt  
  BAKE_SOURCES = []
  TEXT =	
  </code></pre></td>
@@ -93,7 +128,7 @@ bakeConv will be informed where the converted output file should be stored and w
 </table>
 
 <p>Several lines from another template can be insert in the main template file by: </p>
-<pre id="rundrum"><code>GMOCK_TEMPLATE = tools/convert/templates/template_gMock.txt</code></pre>
+<pre id="rundrum"><code>GMOCK_TEMPLATE = ../templates/template_gMock.txt</code></pre>
 
 <p>If one project doesn't have any source files, then an empty array</p>
 <pre id="rundrum"><code>BAKE_SOURCES = []</code></pre>

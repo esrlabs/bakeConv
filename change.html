@@ -7,6 +7,12 @@
 <body>
 <h1>Changelog</h1>
 
+January 28, 2016 - bakeConv 1.5.4
+<ul>
+<li><b>Added: MainProject = Workspace[0]/main is now possible, instead of writing: ../../../main</b>	
+<li><b>Changed: OutputFile have to be defined like "OutputFile = $$(BAKE_PROJECTDIR)/CMakesLists.txt"; bakeConv will replace $$(BAKE_PROJECTDIR) automatically with the right path.</b>
+</ul>
+
 January 27, 2016 - bakeConv 1.5.3
 <ul>
 <li><b>Bugfix: error message will now appear in debug mode, if the path of the config file is wrong (thrown exception is handled now)</b>
