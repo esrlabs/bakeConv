@@ -2,6 +2,8 @@
 # Author: Frauke Blossey
 # 23.03.2015
 
+require_relative 'Util'
+
 module BConv
 
   class ConfigParser
@@ -21,7 +23,7 @@ module BConv
         j=0
         
         File.open(@filename) do |l|
-           while(line = l.gets) != nil  
+          while(line = l.gets) != nil  
             if line.include?("{")
               mapping.push({})
               i = i+1
@@ -32,6 +34,7 @@ module BConv
               if bracket == true
                 if @projToConvert != "" && @projToConvert != mapping[i]['Proj2Convert']
                   #do nothing and continue
+                  bracket = false
                 elsif @projToConvert != "" && @projToConvert == mapping[i]['Proj2Convert']
                   mappings.push({})
                   mappings[j] = mapping[i].clone
@@ -39,6 +42,7 @@ module BConv
                 else
                   mappings.push({})
                   mappings[j] = mapping[i].clone
+                  bracket = false
                 end
                 
                 if mappings.length != 0
@@ -60,6 +64,7 @@ module BConv
               getKeyValuePairs(line,mapping[i],lineNumber)
             end
           end
+          replaceWorkspaceElmInPath(mappings)
         end
         return 0, mappings
       rescue Exception => e
@@ -85,6 +90,18 @@ module BConv
         hash.store(arr[0].strip,"")
       end
       return hash
+    end
+    
+    def replaceWorkspaceElmInPath(mappings)
+      for j in 0..(mappings.length-1)
+        workspaceArr = Util.strToArray('Workspace',mappings[j])    
+        mappings[j].each do |key,value|
+          match = value.match(/Workspace\s*\[\s*(\d+)\s*\]/)
+          if match != nil
+            value.gsub!(/Workspace\s*\[\s*(\d+)\s*\]/,workspaceArr[match[1].to_i])
+          end
+        end
+      end
     end
     
   end

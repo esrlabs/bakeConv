@@ -10,7 +10,8 @@ class Util
     if File.isAbsolute?(file)
       outputfilename = file
     else
-      outputfilename = File.join(pwd,file)
+      #outputfilename = File.dirname(pwd) + "/" + file
+      outputfilename = File.expand_path(file)
     end
     return outputfilename    
   end

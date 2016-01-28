@@ -125,14 +125,16 @@ def main
     puts bakeLines if debugMode == true
     abort "Error while trying to call bake!" unless $?.success?
     bhash = bake.getHash(bakeLines)
+    outputFile = BConv::PathAdapt.adapt_outputPath(bhash,map['OutputFile'])
+    map['OutputFile'] = outputFile
     if bhash != nil
       map.each do |k,v|
         if (k == "EXCLUDE_BAKE_SOURCES") || (k == "EXCLUDE_BAKE_INCLUDES") || (k == "EXCLUDE_BAKE_DEPENDENCIES")          
           bhash = BConv::Filter.hashFilter(k, v, bhash)
         end
       end
-     # bhash_adapted = BConv::PathAdapt.adapt_path(map['OutputFile'], bhash, cfgFleFromCmdLne, debugMode)
-      bhash_adapted = BConv::PathAdapt.adapt_path(map['OutputFile'], bhash, map['Workspace'][1..-2], debugMode)
+      bhash_adapted = BConv::PathAdapt.adapt_path(map['OutputFile'], bhash, cfgFleFromCmdLne, debugMode)
+     # bhash_adapted = BConv::PathAdapt.adapt_path(map['OutputFile'], bhash, map['Workspace'][1..-2], debugMode)
     end
     
     if bhash_adapted != nil

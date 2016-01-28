@@ -15,13 +15,11 @@ module BConv
     end
     
     def convert
-      pwd = @map['Workspace'][1..-2]
+      pwd = @configFile
       
-      #outputfilename = Util.makeAbsolute(@map['OutputFile'], @configFile)
-      outputfilename = Util.makeAbsolute(@map['OutputFile'], pwd)
-      #templatefilename = Util.makeAbsolute(@map['TemplateFile'], @configFile)
+      outputfilename = @map['OutputFile']
       templatefilename = Util.makeAbsolute(@map['TemplateFile'], pwd)
-
+     
       lineIdx = 0
       tmpLineIdx = 0
       set = true
@@ -48,7 +46,6 @@ module BConv
                   postfix = preAndPostfixOpt[0][1]
                 end
                 
-                #filename = Util.makeAbsolute(@map[key], @configFile)
                 filename = Util.makeAbsolute(@map[key], pwd)
                 raise "Error: Template file #{File.basename(filename)} is empty!" if File.zero?(filename)
                 raise "Error: File #{File.basename(filename)} does not exist!" if !File.exist?(filename)

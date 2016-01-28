@@ -10,14 +10,24 @@ module BConv
     SLASH = "/"
     COLON = ":"
     
+    def self.adapt_outputPath(bhash,outputFile)
+      bhash.each do |key,value|
+        if key == "BAKE_PROJECTDIR"
+          outputFile.gsub!("$$(BAKE_PROJECTDIR)",value[0])
+        end
+      end
+      
+      return outputFile
+    end
+    
     def self.adapt_path(outputFilePath, bhash, pwd, debugMode)
       diffPathLevels, diffPathLevelsDown = 0, 0
       dir, diffUp = "", ""
       diffArr = []
       
       begin
-      #splitOutputFile = File.expand_path(File.dirname(outputFilePath),File.dirname(pwd)).split("/") 
-      splitOutputFile = File.expand_path(File.dirname(outputFilePath),pwd).split("/")
+      splitOutputFile = File.expand_path(File.dirname(outputFilePath),File.dirname(pwd)).split("/") 
+      #splitOutputFile = File.expand_path(File.dirname(outputFilePath),pwd).split("/")
       splitProjMeta   = bhash['BAKE_PROJECTDIR'][0].split("/") if bhash['BAKE_PROJECTDIR'][0].include?("/") && bhash['BAKE_PROJECTDIR'] != nil
       #raise "Error: BAKE_PROJDIR is missing!" if bhash['BAKE_PROJECTDIR'] == nil
   
